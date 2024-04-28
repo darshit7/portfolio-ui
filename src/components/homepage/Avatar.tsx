@@ -6,7 +6,7 @@ import { ProfileCardInfo } from './ProfileCardInfo';
 
 
 const Avatar = () => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const [style, setStyle] = useState<React.CSSProperties>({});
 
@@ -14,7 +14,7 @@ const Avatar = () => {
     if (!ref.current || window.innerWidth < 1280) return;
 
     const { clientX, clientY } = e;
-    const { width, height, x, y } = ref.current.getBoundingClientRect();
+    const { width, height, x, y } = ref?.current?.getBoundingClientRect();
     const mouseX = Math.abs(clientX - x);
     const mouseY = Math.abs(clientY - y);
     const rotateMin = -15;

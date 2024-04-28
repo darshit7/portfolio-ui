@@ -4,18 +4,18 @@ import Typed from 'typed.js';
 import Twemoji from '@/components/Twemoji';
 
 const TypedBios = () => {
-  const el = React.useRef(null);
-  const typed = React.useRef(null);
+  const el = React.useRef<HTMLDivElement>(null);
+  const typed = React.useRef<Typed | null >(null);
 
   React.useEffect(() => {
-    typed.current = new Typed(el.current, {
+    typed.current = new Typed(el?.current, {
       stringsElement: '#bios',
       typeSpeed: 40,
       backSpeed: 10,
       loop: true,
       backDelay: 1000,
     });
-    return () => typed.current.destroy();
+    return () => typed.current?.destroy();
   }, []);
 
   return (

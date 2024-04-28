@@ -1,5 +1,6 @@
 import type readingTime from 'reading-time';
 import type { ImageProps as NextImageProps } from 'next/image';
+import { ReactNode } from 'react';
 
 export interface PageTitleProps {
   children: React.ReactNode
@@ -20,7 +21,7 @@ export type TwemojiProps = {
 };
 
 
-export type ReadingTime = ReturnType<typeof readingTime>;
+export type ReadingTime = ReactNode;
 
 export interface BlogMetaProps {
   date: string;

@@ -1,5 +1,4 @@
 import path from 'path';
-import Link from "next/link";
 import { readMDXFile } from '@/utils/mdx'
 import CustomLink from "@/components/MDXExternalLink";
 

@@ -5,13 +5,13 @@ import clsx from 'clsx';
 import type { ImageProps } from '@/types/components';
 import ImageLightbox from './ImageLightbox';
 
-import { LOGO_IMAGE_PATH, BLUR_IMAGE_DATA_URL } from '@/constants/index';
+// import { LOGO_IMAGE_PATH, BLUR_IMAGE_DATA_URL } from '@/constants/index';
 const Image = ({ shouldOpenLightbox = true, ...rest }: ImageProps) => {
   let blurDataURL = '';
 
-  if (rest.src !== LOGO_IMAGE_PATH) {
-    blurDataURL = BLUR_IMAGE_DATA_URL;
-  }
+  // if (rest.src !== LOGO_IMAGE_PATH) {
+  //   blurDataURL = BLUR_IMAGE_DATA_URL;
+  // }
 
   const [openLightbox, setOpenLightbox] = useState(false);
 

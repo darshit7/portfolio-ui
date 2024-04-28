@@ -7,9 +7,8 @@ import { PageTitle } from '@/components/PageTitle'
 import { BlogMeta } from '@/components/blog/BlogMeta'
 
 export default async function SnippetPage({ params }: { params: { slug: string } }) {
-  // MDX text - can be from a local file, database, CMS, fetch, anywhere...
+
   let {MDXContent, frontmatter} = await readMDXFile(path.join(process.cwd(), 'src', 'data', 'snippets', `${params.slug}.mdx`))
-  console.dir(MDXContent)
   return (
     <SectionContainer>
       <article>

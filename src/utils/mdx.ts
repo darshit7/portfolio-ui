@@ -11,9 +11,10 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeCodeTitles from 'rehype-code-titles'
 import { rehypeAccessibleEmojis } from 'rehype-accessible-emojis'
+import { MdxFileData } from '@/types/mdx';
 
 
-async function parseFrontmatter(fileContent: string) {
+async function parseFrontmatter(fileContent: string): Promise<MdxFileData> {
   const { value } = await compile(fileContent, {
     'remarkPlugins': [
       remarkGfm,
@@ -32,7 +33,7 @@ function getRecursiveMDXFiles(dir:string) {
     return fs.readdirSync(dir, {recursive: true}).filter((file) => path.extname(file) === '.mdx')
 }
 
-export async function readMDXFile(filePath:string) {
+export async function readMDXFile(filePath:string): Promise<MdxFileData> {
     let rawContent = fs.readFileSync(filePath, 'utf-8')
     const result = await parseFrontmatter(rawContent)
     return result
@@ -40,7 +41,7 @@ export async function readMDXFile(filePath:string) {
 
 export const getMDXData = async(dir:string) => {
   let mdxFiles = getRecursiveMDXFiles(dir)
-  let MDXdata: object[] = [];
+  let MDXdata: MdxFileData[] = [];
   MDXdata = await Promise.all(
     mdxFiles.map(async (file) => {
       return await readMDXFile(path.join(dir, file))

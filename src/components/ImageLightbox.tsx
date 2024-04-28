@@ -1,6 +1,6 @@
 import { useTheme } from 'next-themes';
 import React, { useState, useEffect, useCallback, type KeyboardEvent as ReactKeyboardEvent } from 'react';
-
+import Image from 'next/image';
 import { Twemoji } from './Twemoji';
 import type { ImageLightBoxProps } from '@/types/components';
 
@@ -66,7 +66,7 @@ const ImageLightbox = ({ src, closeLightbox }: ImageLightBoxProps) => {
             <Twemoji emoji="cross-mark" />
           </button>
         </div>
-        <img
+        <Image
           src={src.toString()}
           onLoad={() => setImgLoaded(true)}
           className="max-h-[80vh] max-w-[90vw] cursor-zoom-out"

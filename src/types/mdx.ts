@@ -1,6 +1,5 @@
 import type readingTime from 'reading-time'
 import type { BrandIconsMap } from '@/components/BrandIcon'
-import type { TOC } from './server'
 
 
 export interface MdxFrontMatter {
@@ -33,8 +32,16 @@ export interface AuthorFrontMatter extends MdxFrontMatter {
   github?: string
 }
 
+export type TOC = {
+  value: string
+  depth: number
+  data: { hProperties?: { id?: string } }
+  children: TOC[]
+  url: string
+}
+
 export interface MdxFileData {
-  mdxSource: string
-  frontMatter: BlogFrontMatter
-  toc: TOC[]
+  MDXContent: any
+  frontmatter: any
+  toc: any
 }
