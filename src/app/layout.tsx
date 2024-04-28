@@ -54,7 +54,6 @@ export default function RootLayout({
             {children}
           </LayoutWrapper>
         </ThemeProvider>
-        <Script async data-website-id={siteMetadata.analytics.umamiWebsiteId} src="https://us.umami.is/script.js" />
       </body>
     </html>
   );
