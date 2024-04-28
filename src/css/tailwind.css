@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+html,
+.lightbox-overlay {
+  width: 100vw;
+}
+
+html.prevent-scroll {
+  overflow-y: hidden;
+}
+
+html.lightbox-loading,
+html.lightbox-loading * {
+  cursor: wait !important;
+}
+
+.task-list-item::before {
+  @apply hidden;
+}
+
+.task-list-item {
+  @apply list-none;
+}
+
+.footnotes {
+  @apply mt-12 border-t border-gray-200 pt-8 dark:border-gray-700;
+}
+
+.data-footnote-backref {
+  @apply no-underline;
+}
+
+.csl-entry {
+  @apply my-5;
+}
+
+/* START: CSS Prose */
+.prose {
+  font-size: 18px;
+}
+
+.prose h2 {
+  font-size: 28px;
+}
+
+.prose h3 {
+  font-size: 24px;
+}
+
+.prose img {
+  margin: 0 auto;
+  border-radius: 12px;
+}
+
+.prose blockquote {
+  background: #ebebeb;
+}
+/* END: CSS Prose */
+
+.dark .dark\:prose-dark blockquote {
+  background: #5c6370;
+}
+
+/* START: CSS Github discussion */
+#comments-container .giscus-frame {
+  @apply w-full;
+}
+/* END: CSS Github discussion */
+
+/* START: CSS popular tags */
+.popular-tags .javascript {
+  @apply bg-amber-400;
+}
+
+.popular-tags .typescript {
+  @apply bg-blue-500;
+}
+
+.popular-tags .nestjs {
+  @apply bg-rose-500;
+}
+
+.popular-tags .react {
+  @apply bg-sky-500;
+}
+
+.popular-tags .devops {
+  @apply bg-sky-600;
+}
+
+.popular-tags .database {
+  @apply bg-green-900;
+}
+/* END: CSS popular tags */
+
+/* https://stackoverflow.com/questions/61083813/how-to-avoid-internal-autofill-selected-style-to-be-applied */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+.dark\:shadow-mondegreen:is(.dark *) {
+  --tw-shadow: 5px 5px rgba(122, 162, 247, .4), 10px 10px rgba(122, 162, 247, .3), 15px 15px rgba(122, 162, 247, .2), 20px 20px rgba(122, 162, 247, .1), 25px 25px rgba(122, 162, 247, .05);
+  --tw-shadow-colored: 5px 5px var(--tw-shadow-color), 10px 10px var(--tw-shadow-color), 15px 15px var(--tw-shadow-color), 20px 20px var(--tw-shadow-color), 25px 25px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.shadow-demure {
+  --tw-shadow: rgba(0, 0, 0, .3) 0 35px 60px -15px;
+  --tw-shadow-colored: 0 35px 60px -15px var(--tw-shadow-color);
+}
+.shadow-demure {
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.blog a {
+  color: #ffffff !important;
+}

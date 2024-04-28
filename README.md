@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# My 🏠 on the ☁️
 
-## Getting Started
+My personal site on the cloud. Inspired from [Tuan Anh](https://www.leohuynh.dev/)
 
-First, run the development server:
+## Motivation
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Have you ever stumbled upon a coding problem, scoured the internet for solutions, and then found yourself diving deep into a rabbit hole of knowledge? If you're anything like me, you know that feeling all too well.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+So, why did I decide to start this blog?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> The answer lies in the countless hours spent exploring the vast landscape of programming. From deciphering the intricacies of Python's syntax to building robust backend systems, every line of code has been a step forward in my journey. But as I delved deeper, I realized something profound — learning is most fulfilling when shared.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Thorugh this blog, I aspire to cultivate curiosity, foster connection and empower learning. Knowledge is not a finite resource; it's a flame that grows brighter with every mind it ignites. Together, let's navigate the twists and turns of technology and emerge not just as skilled developers, but as passionate advocates for learning and growth. 🍻
 
-## Learn More
+## Tech stack
 
-To learn more about Next.js, take a look at the following resources:
+This blog is hosted on [Vercel](https://vercel.com/), built with [Next.js](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/) using **Tailwind Nextjs Starter Blog**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A huge thanks to [Tuan Anh](https://www.leohuynh.dev/), this site took inspiration from his personal blog. A few changes I did are:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+-⚛️ Upgrading to **Next 14**
+-🎉 Adopting **App** based routing
+-📥 Using simple `@next/mdx` and `rehype`/`remark` plugins for `mdx` pages integration.
 
-## Deploy on Vercel
+Also, huge thanks to [Timothy Lin](https://twitter.com/timlrxx) for the minimal, lightweight, and super easy-to-customize blog starter, from which [Tuan Anh's](https://www.leohuynh.dev/) website was inspired.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Integrated features are:
+-📊 Monitoring site with [Umami](https://umami.is/) website analytics
+-👀 Theming in dark mode with [Github dark dimmed](https://github.blog/changelog/2021-04-14-dark-and-dimmed-themes-are-now-generally-available/)
+  colors for better contrast
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Assets
+
+Most of the images in my blog are from [Unsplash](https://unsplash.com/), gifs from [GIPHY](https://giphy.com/), and illustrations are from [Storyset](https://storyset.com/).
+
+Thanks for the free resources 🙏
+
+## Contact Me
+
+- **Email:** [darshit7@gmail.com](mailto:darshit7@gmail.com)
+- **LinkedIn:** [https://www.linkedin.com/in/darshit7/](https://www.linkedin.com/in/darshit7/)
+
+---
+
+Copyright (c) 2024 Darshit Patoliya (DP) - Alrights reserved.
