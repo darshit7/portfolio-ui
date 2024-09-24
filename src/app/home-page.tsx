@@ -66,8 +66,8 @@ export default function HomePage() {
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-2xl font-bold leading-8 tracking-tight">
-                        <Link href={`https://medium.com/@darshit7/deep-dive-into-the-fascinating-journey-of-chatgpts-training-process-unveiling-the-magic-of-c5b70b47e3c4`} className="text-gray-900 dark:text-gray-100">
-                          {"Deep Dive into The Fascinating Journey of ChatGPT’s Training Process: Unveiling the Magic of Language Generation"}
+                        <Link href={`https://medium.com/python-in-plain-english/beyond-the-gil-future-of-parallel-computing-in-python-38ef2a80555c`} className="text-gray-900 dark:text-gray-100">
+                          {"Beyond the GIL: Future of Parallel Computing in Python"}
                         </Link>
                       </h2>
                     </div>
@@ -75,7 +75,7 @@ export default function HomePage() {
                   </div>
                   <div className="text-base font-medium leading-6">
                     <Link
-                      href={`https://medium.com/@darshit7/deep-dive-into-the-fascinating-journey-of-chatgpts-training-process-unveiling-the-magic-of-c5b70b47e3c4`}
+                      href={`https://medium.com/python-in-plain-english/beyond-the-gil-future-of-parallel-computing-in-python-38ef2a80555c`}
                       className="text-primary hover:text-sky-600 dark:hover:text-sky-400"
                       aria-label={`Read "${title}"`}
                     >
