@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Blogs from '@/data/blog/blog.mdx'
 import CustomLink from "@/components/MDXExternalLink";
 

@@ -22,7 +22,7 @@ export default function Header() {
           <div className="group ml-2 text-xl font-bold transition duration-300">
           <Twemoji emoji="d" className="ml-4"/><Twemoji emoji="p" className="ml-4"/>
           </div>
-        </Link>
+      </Link>
         <div className="flex items-center text-base leading-5">
           <div className="hidden sm:block">
             {headerNavLinks.map((link) => (

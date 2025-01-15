@@ -7,8 +7,6 @@ import XIcon from '../../../public/static/icons/x_white.svg';
 export function ProfileCardInfo() {
   return (
     <div className="hidden py-4 xl:block xl:px-6">
-      <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{'Darshit Patoliya'}</h3>
-      <h5 className="py-2 text-gray-700 dark:text-gray-400">{'A Fullstack (Backend-Heavy) Engineer'}</h5>
       <div className="mb-2 mt-4 space-y-4">
         <div className="flex items-center text-gray-700 dark:text-gray-200">
           <Backpack strokeWidth={1} size={20} />
@@ -28,10 +26,17 @@ export function ProfileCardInfo() {
         <div className="flex items-center text-gray-700 dark:text-gray-200">
           <MapPin strokeWidth={1} size={20} />
           <p className="px-2">
-            Bengaluru,
-            <span className="absolute ml-1 inline-flex pt-px">
-              <Twemoji emoji="flag-india" />
-            </span>
+          <a
+              target="_blank"
+              href="https://en.wikipedia.org/wiki/Bengaluru"
+              rel="noreferrer"
+              className="hover:underline"
+          >
+            Bengaluru,&nbsp;
+          </a>
+          <span className="absolute inline-flex pt-px">
+            IN&nbsp;<Twemoji emoji="flag-india" />
+          </span>
           </p>
         </div>
         <div className="flex items-center text-gray-700 dark:text-gray-200">
