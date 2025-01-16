@@ -10,10 +10,10 @@ const BlogLinks = () => {
           My writings
         </span>
       </Link>
-      <Link href="/snippets" className="hover:underline">
+      <Link href="/notes" className="hover:underline">
         <Twemoji emoji="dna" />
-        <span data-umami-event="home-link-snippets" className="ml-1.5">
-          My Snippets
+        <span data-umami-event="home-link-notes" className="ml-1.5">
+          My Notes
         </span>
       </Link>
       <Link href="/about" className="hover:underline">

@@ -8,7 +8,7 @@ import { BlogMeta } from '@/components/blog/BlogMeta'
 
 export default async function SnippetPage({ params }: { params: { slug: string } }) {
 
-  let {MDXContent, frontmatter} = await readMDXFile(path.join(process.cwd(), 'src', 'data', 'snippets', `${params.slug}.mdx`))
+  let {MDXContent, frontmatter} = await readMDXFile(path.join(process.cwd(), 'src', 'data', 'notes', `${params.slug}.mdx`))
   return (
     <SectionContainer>
       <article>

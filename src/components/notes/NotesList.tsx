@@ -3,17 +3,17 @@ import { getMDXData } from '@/utils/mdx'
 import { SnippetCard } from "../SnippetCard";
 import { MdxFileData } from '@/types/mdx'
 
-let snippets: MdxFileData[] = []
+let notes: MdxFileData[] = []
 getMDXData(path.join(process.cwd(), 'src', 'data', 'notes')).then(results => {
-    snippets = results;
+    notes = results;
 })
 
 
 export default function NotesList() {
     return(
         <>
-            {snippets.map((snippet) => (
-                <SnippetCard key={snippet.frontmatter.title} snippet={snippet.frontmatter} />
+            {notes.map((note) => (
+                <SnippetCard key={note.frontmatter.title} snippet={note.frontmatter} />
             ))}
         </>
     )

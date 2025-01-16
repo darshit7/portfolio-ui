@@ -6,7 +6,7 @@ export function SnippetCard({ snippet }: { snippet: SnippetFrontMatter }) {
   let { type, heading, summary, title, slug } = snippet
 
   return (
-    <Link href={`/snippets/${slug}`} title={title}>
+    <Link href={`/notes/${slug}`} title={title}>
       <div
         data-umami-event="view-snippet"
         className="mb-4 p-3 lg:p-4 gap-6 flex cursor-pointer rounded-lg border border-transparent shadow-intense hover:shadow-nextjs dark:shadow-intense-dark dark:hover:shadow-nextjs-dark lg:mb-0"
