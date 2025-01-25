@@ -5,12 +5,11 @@ export const HEADER_NAV_LINKS = [
   { href: '/notes', title: 'Notes', emoji: 'dna' },
 ]
 
-export const MORE_NAV_LINKS = []
-// export const MORE_NAV_LINKS = [
-//   { href: '/books', title: 'Books', emoji: 'books' },
-//   { href: '/movies', title: 'Movies', emoji: 'film-frames' },
-//   { href: '/tags', title: 'Tags', emoji: 'label' },
-// ]
+export const MORE_NAV_LINKS = [
+  { href: '/books', title: 'Books', emoji: 'books' },
+  { href: '/movies', title: 'Movies', emoji: 'film-frames' },
+  { href: '/tags', title: 'Tags', emoji: 'label' },
+]
 
 export const FOOTER_NAV_LINKS = [
   { href: '/blog', title: 'Blog' },

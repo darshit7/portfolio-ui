@@ -77,7 +77,8 @@ export function MobileNav() {
                 ref={navRef}
                 className="mt-4 flex h-full basis-0 flex-col items-start gap-4 overflow-y-auto pl-10 pt-2"
               >
-                {[...HEADER_NAV_LINKS, ...MORE_NAV_LINKS].map((link) => (
+                {/* removed ...MORE_NAV_LINKS from below list as no more links now*/}
+                {[...HEADER_NAV_LINKS,].map((link) => (
                   <Link
                     key={link.title}
                     href={link.href}
