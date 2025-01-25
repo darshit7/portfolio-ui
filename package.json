@@ -4,7 +4,7 @@
   "scripts": {
     "start": "next dev",
     "dev": "cross-env next dev",
-    "build": "cross-env next build && npm run postbuild",
+    "build": "cross-env next build",
     "postbuild": "cross-env NODE_OPTIONS='--experimental-json-modules' tsx ./scripts/post-build.ts",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
