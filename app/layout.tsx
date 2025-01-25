@@ -7,6 +7,7 @@ import clsx from 'clsx'
 import type { Metadata } from 'next'
 import { JetBrains_Mono, Nunito, Playpen_Sans } from 'next/font/google'
 import { UmamiAnalytics } from '~/components/analytics/umami'
+import { Analytics } from "@vercel/analytics/react"
 import { Footer } from '~/components/footer'
 import { Header } from '~/components/header'
 import { KBarSearchProvider } from '~/components/search/kbar-provider'
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <TiltedGridBackground className="inset-x-0 top-0 z-[-1] h-[50vh]" />
         <ThemeProviders>
+          <Analytics />
           <UmamiAnalytics websiteId={SITE_METADATA.analytics.umamiAnalytics.websiteId} />
           <KBarSearchProvider configs={SITE_METADATA.search.kbarConfigs}>
             <Header />
