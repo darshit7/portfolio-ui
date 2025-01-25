@@ -27,8 +27,7 @@ Also, huge thanks to [Timothy Lin](https://twitter.com/timlrxx) for the minimal,
 Integrated features are:
 -📊 Monitoring site with [Umami](https://umami.is/) website analytics
 -👀 Theming in dark mode with [Github dark dimmed](https://github.blog/changelog/2021-04-14-dark-and-dimmed-themes-are-now-generally-available/)
-  colors for better contrast
-
+colors for better contrast
 
 ## Assets
 
