@@ -46,8 +46,8 @@ export const SITE_METADATA = {
     },
   },
   support: {
-    buyMeACoffee: 'https://www.buymeacoffee.com',
-    paypal: 'https://paypal.me',
-    kofi: 'https://ko-fi.com',
+    buyMeACoffee: '',
+    paypal: '',
+    kofi: '',
   },
 }
