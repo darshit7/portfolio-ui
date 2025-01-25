@@ -5,7 +5,7 @@ export function Intro() {
   return (
     <>
       <h1 className="text-neutral-900 dark:text-neutral-200">
-        I`&apos;`m{' '}
+        I&apos;m{' '}
         <span className="font-medium">
           {SITE_METADATA.firstName} {SITE_METADATA.lastName}
         </span>{' '}

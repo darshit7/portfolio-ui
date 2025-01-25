@@ -31,7 +31,7 @@ export const SITE_METADATA = {
   analytics: {
     umamiAnalytics: {
       websiteId: process.env.NEXT_UMAMI_ID,
-      shareUrl: 'https://cloud.umami.is/share/bYqBWfwSKIuAquap/darshitp.dev',
+      shareUrl: 'https://cloud.umami.is/share/31Vdik5R0u8gWpSx/darshitp.dev',
     },
   },
   newsletter: {

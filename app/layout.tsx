@@ -81,7 +81,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       )}
       suppressHydrationWarning
     >
-      <UmamiAnalytics websiteId={SITE_METADATA.analytics.umamiAnalytics.websiteId} />
       <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/favicons/favicon.ico`} />
       <link
         rel="icon"
@@ -117,6 +116,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TiltedGridBackground className="inset-x-0 top-0 z-[-1] h-[50vh]" />
         <ThemeProviders>
           <Analytics />
+          <UmamiAnalytics websiteId={SITE_METADATA.analytics.umamiAnalytics.websiteId} />
           <KBarSearchProvider configs={SITE_METADATA.search.kbarConfigs}>
             <Header />
             <main className="mb-auto grow">{children}</main>
