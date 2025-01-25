@@ -7,7 +7,7 @@ import { Menu, X } from 'lucide-react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Link } from '~/components/ui/link'
 import { Twemoji } from '~/components/ui/twemoji'
-import { HEADER_NAV_LINKS, MORE_NAV_LINKS } from '~/data/navigation'
+import { HEADER_NAV_LINKS } from '~/data/navigation'
 import { SITE_METADATA } from '~/data/site-metadata'
 import { Logo } from './logo'
 
