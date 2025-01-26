@@ -19,8 +19,8 @@ export function Intro() {
       </h1>
       <h1 className="mt-5 text-neutral-900 dark:text-neutral-200">
         Outside of work, you’ll often find me enjoying time in nature{' '}
-        <Twemoji emoji="snow-capped-mountain" />, hanging out with my wife{' '}
-        <Twemoji emoji="winking-face" /> or following my favorite sports like cricket{' '}
+        <Twemoji emoji="snow-capped-mountain" />, reading{' '}
+        <Twemoji emoji="open-book" /> or following my favorite sports like cricket{' '}
         <Twemoji emoji="cricket" />, swimming <Twemoji emoji="man-swimming" />
         &nbsp; and badminton <Twemoji emoji="badminton" />.
       </h1>
