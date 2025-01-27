@@ -13,7 +13,7 @@ export function Home() {
             <Intro />
           </div>
         </div>
-        <div className="hidden pl-4 pt-8 xl:block">
+        <div className="lg:pl-0 md:pl-4 pt-8 xl:block">
           <ProfileCard />
         </div>
       </div>

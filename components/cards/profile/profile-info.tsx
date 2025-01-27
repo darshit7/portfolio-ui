@@ -62,7 +62,7 @@ function getTime() {
 export function ProfileCardInfo() {
   const { time, diff } = getTime()
   return (
-    <div className="hidden py-4 md:block md:px-5">
+    <div className="py-4 px-4 md:block md:px-5">
       <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
         {SITE_METADATA.firstName} {SITE_METADATA.lastName}
       </h3>
