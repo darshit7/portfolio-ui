@@ -29,4 +29,10 @@ export const BLOG_METADATA = [
         "link": "https://medium.com/python-in-plain-english/beyond-the-gil-future-of-parallel-computing-in-python-38ef2a80555c",
         "date": new Date("2024-08-15")
     },
+    {
+        "id": 6,
+        "title": "Riding the DeepSeek Wave! Running it Locally",
+        "link": "https://medium.com/@darshit7/riding-the-deepseek-wave-running-it-locally-a012cebadac3",
+        "date": new Date("2025-01-29")
+    },
 ]
