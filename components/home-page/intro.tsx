@@ -9,8 +9,8 @@ export function Intro() {
         <span className="font-medium">
           {SITE_METADATA.firstName} {SITE_METADATA.lastName}
         </span>{' '}
-        - a full-stack developer with a strong focus on backend development, over a decade of
-        experience in the Python <Twemoji emoji="python" /> ecosystem.
+        - a <span className="font-semibold">Pyhon developer</span> with over a decade of experience in the Python <Twemoji emoji="python" /> ecosystem.
+        Currently, I am expanding my expertise in AI, Machine Learning <Twemoji emoji="robot" /> and Agentic development <Twemoji emoji="brain" />.
       </h1>
       <h1 className="mt-5 text-neutral-900 dark:text-neutral-200">
         I’m enthusiastic about emerging technologies, intricacies of the universe{' '}

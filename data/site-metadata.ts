@@ -4,7 +4,7 @@ export const SITE_METADATA = {
   lastName: 'Patoliya',
   author: 'Darshit Patoliya',
   headerTitle: `Darshit's blog`,
-  headline: 'A full-stack (backend heavy) developer',
+  headline: 'A Python developer | AI/ML & Agentic Systems',
   jobTitle: 'SDE - III',
   organization: 'Morgan Stanley',
   city: 'Bengaluru',
