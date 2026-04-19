@@ -9,7 +9,7 @@ import yaml from 'js-yaml'
 export function remarkExtractFrontmatter() {
   return (tree: Parent, file) => {
     visit(tree, 'yaml', (node: Parent) => {
-      //@ts-ignore
+      // @ts-expect-error vfile data is an open bag; frontmatter is attached dynamically.
       file.data.frontmatter = yaml.load(node.value)
     })
   }

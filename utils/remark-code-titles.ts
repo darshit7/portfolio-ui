@@ -8,7 +8,7 @@ import { visit } from 'unist-util-visit'
 export function remarkCodeTitles() {
   return (tree: Parent & { lang?: string }) =>
     visit(tree, 'code', (node: Parent & { lang?: string }, index: number, parent: Parent) => {
-      let nodeLang = node.lang || ''
+      const nodeLang = node.lang || ''
       let language = ''
       let title = ''
 
@@ -21,7 +21,7 @@ export function remarkCodeTitles() {
 
       parent.children.splice(index, 0, {
         type: 'mdxJsxFlowElement',
-        // @ts-ignore
+        // @ts-expect-error mdxJsxFlowElement typing does not include custom JSX node fields.
         name: 'CodeTitle',
         attributes: [
           { type: 'mdxJsxAttribute', name: 'lang', value: language },

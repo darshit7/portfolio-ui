@@ -12,18 +12,15 @@ import remarkGfm from 'remark-gfm'
 import { remarkAlert } from 'remark-github-blockquote-alert'
 import remarkMath from 'remark-math'
 import { SITE_METADATA } from './data/site-metadata'
-import { allCoreContent } from './utils/contentlayer'
-import { sortPosts } from './utils/misc'
 import { remarkCodeTitles } from './utils/remark-code-titles'
 import { remarkExtractFrontmatter } from './utils/remark-extract-frontmatter'
 import { remarkImgToJsx } from './utils/remark-img-to-jsx'
 import { extractTocHeadings } from './utils/remark-toc-headings'
 
-let root = process.cwd()
-let isProduction = process.env.NODE_ENV === 'production'
+const root = process.cwd()
 
 // heroicon mini link
-let icon = fromHtmlIsomorphic(
+const icon = fromHtmlIsomorphic(
   `
     <span class="content-header-link">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 linkicon">
@@ -35,7 +32,7 @@ let icon = fromHtmlIsomorphic(
   { fragment: true }
 )
 
-let computedFields: ComputedFields = {
+const computedFields: ComputedFields = {
   readingTime: { type: 'json', resolve: (doc) => readingTime(doc.body.raw) },
   slug: {
     type: 'string',
@@ -52,7 +49,7 @@ let computedFields: ComputedFields = {
   toc: { type: 'json', resolve: (doc) => extractTocHeadings(doc.body.raw) },
 }
 
-export let Note = defineDocumentType(() => ({
+export const Note = defineDocumentType(() => ({
   name: 'Note',
   filePathPattern: 'notes/**/*.mdx',
   contentType: 'mdx',
@@ -124,7 +121,7 @@ export default makeSource({
     ],
   },
   onSuccess: async (importData) => {
-    let { allNotes } = await importData()
+    await importData()
     console.log('✨ Content source generated successfully!')
   },
 })

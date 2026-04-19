@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "scripts": {
     "start": "next dev",
-    "dev": "contentlayer2 build && cross-env next dev",
-    "build": "contentlayer2 build && cross-env next build",
+    "dev": "node --no-deprecation ./node_modules/contentlayer2/bin/cli.cjs build && cross-env next dev",
+    "build": "node --no-deprecation ./node_modules/contentlayer2/bin/cli.cjs build && cross-env next build",
     "postbuild": "",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "lint": "next lint --fix --dir pages --dir app --dir components --dir lib --dir layouts --dir scripts",
+    "lint": "eslint . --fix --max-warnings=0",
     "prepare": "husky",
     "db:init": "npx drizzle-kit generate && npx drizzle-kit push",
     "db:studio": "npx drizzle-kit studio --port 8088",
@@ -65,6 +65,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/eslintrc": "^3.3.5",
     "@svgr/webpack": "^8.1.0",
     "@types/mdx": "^2.0.12",
     "@types/node": "^22.10.2",

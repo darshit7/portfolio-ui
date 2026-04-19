@@ -17,14 +17,14 @@ export type Toc = TocItem[]
  */
 function remarkTocHeadings() {
   return (tree: Parent, file) => {
-    let toc: Toc = []
+    const toc: Toc = []
     visit(tree, 'heading', (node) => {
-      let textContent = toString(node).replace(/<[^>]*(>|$)/g, '')
+      const textContent = toString(node).replace(/<[^>]*(>|$)/g, '')
       if (textContent) {
         toc.push({
           value: textContent,
           url: '#' + slug(textContent),
-          // @ts-ignore
+          // @ts-expect-error unified heading nodes carry depth but generic node typing omits it.
           depth: node.depth,
         })
       }
@@ -40,7 +40,7 @@ function remarkTocHeadings() {
  * @return {*}  {Promise<Toc>}
  */
 export async function extractTocHeadings(markdown: string): Promise<Toc> {
-  let vfile = await remark().use(remarkTocHeadings).process(markdown)
-  // @ts-ignore
+  const vfile = await remark().use(remarkTocHeadings).process(markdown)
+  // @ts-expect-error toc is attached dynamically to vfile data by remarkTocHeadings.
   return vfile.data.toc
 }
