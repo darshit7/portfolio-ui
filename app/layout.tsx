@@ -1,5 +1,5 @@
-import 'css/tailwind.css'
-import 'css/twemoji.css'
+import '~/css/tailwind.css'
+import '~/css/twemoji.css'
 import 'react-medium-image-zoom/dist/styles.css'
 import 'remark-github-blockquote-alert/alert.css'
 
@@ -73,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang={SITE_METADATA.language}
+      data-scroll-behavior="smooth"
       className={clsx(
         'scroll-smooth',
         FONT_NUNITO.variable,
@@ -86,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         rel="icon"
         type="image/png"
         sizes="32x32"
-        href={`${basePath}/static/favicons/favicon_32.ico`}
+        href={`${basePath}/static/favicons/favicon_32.png`}
       />
       <link
         rel="icon"

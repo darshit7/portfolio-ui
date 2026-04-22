@@ -68,6 +68,7 @@ module.exports = () => {
     reactStrictMode: true,
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     images: {
+      qualities: [100, 75],
       remotePatterns: [
         {
           protocol: 'https',
