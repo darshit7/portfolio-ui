@@ -8,8 +8,18 @@ export function formatDate(date: string) {
   })
 }
 
-export async function fetcher(url: string) {
-  return fetch(url).then((res) => res.json())
+export async function fetcher<T = unknown>(url: string): Promise<T> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 10_000)
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    if (!res.ok) {
+      throw new Error(`HTTP error ${res.status}: ${res.statusText}`)
+    }
+    return res.json() as Promise<T>
+  } finally {
+    clearTimeout(timeoutId)
+  }
 }
 
 export function kebabCaseToPlainText(str: string): string {

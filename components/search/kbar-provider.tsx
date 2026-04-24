@@ -11,7 +11,7 @@ import { KBarModal } from './kbar-modal'
 export interface KBarSearchProps {
   searchDocumentsPath: string | false
   defaultActions?: Action[]
-  onSearchDocumentsLoad?: (json: any) => Action[]
+  onSearchDocumentsLoad?: (json: CoreContent<MDXDocument>[]) => Action[]
 }
 
 export interface KBarConfig {
@@ -29,7 +29,8 @@ export function KBarSearchProvider({
   const { searchDocumentsPath, defaultActions, onSearchDocumentsLoad } = configs
   const router = useRouter()
   const [searchActions, setSearchActions] = useState<Action[]>([])
-  const [dataLoaded, setDataLoaded] = useState(false)
+  // Initialize to true when no search path is configured so the UI is never stuck loading.
+  const [dataLoaded, setDataLoaded] = useState(!searchDocumentsPath)
 
   useEffect(() => {
     function mapPosts(posts: CoreContent<MDXDocument>[]) {
@@ -48,21 +49,30 @@ export function KBarSearchProvider({
     }
     async function fetchData() {
       if (searchDocumentsPath) {
-        const url =
-          searchDocumentsPath.indexOf('://') > 0 || searchDocumentsPath.indexOf('//') === 0
-            ? searchDocumentsPath
-            : new URL(searchDocumentsPath, window.location.origin)
-        const res = await fetch(url)
-        const json = await res.json()
-        const actions = onSearchDocumentsLoad ? onSearchDocumentsLoad(json) : mapPosts(json)
-        setSearchActions(actions)
-        setDataLoaded(true)
+        try {
+          const url =
+            searchDocumentsPath.indexOf('://') > 0 || searchDocumentsPath.indexOf('//') === 0
+              ? searchDocumentsPath
+              : new URL(searchDocumentsPath, window.location.origin)
+          const res = await fetch(url)
+          if (!res.ok) {
+            throw new Error(`Failed to load search documents: ${res.statusText}`)
+          }
+          const json = (await res.json()) as CoreContent<MDXDocument>[]
+          const actions = onSearchDocumentsLoad ? onSearchDocumentsLoad(json) : mapPosts(json)
+          setSearchActions(actions)
+        } catch (e) {
+          console.error(
+            'Failed to load search documents:',
+            e instanceof Error ? e.message : String(e)
+          )
+        } finally {
+          setDataLoaded(true)
+        }
       }
     }
     if (!dataLoaded && searchDocumentsPath) {
       fetchData()
-    } else {
-      setDataLoaded(true)
     }
   }, [defaultActions, dataLoaded, router, searchDocumentsPath, onSearchDocumentsLoad])
 

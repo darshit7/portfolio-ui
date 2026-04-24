@@ -9,7 +9,7 @@ export function Button({
   children: React.ReactNode
   as?: React.ElementType
   className?: string
-  [key: string]: any
+  [key: string]: unknown
 }) {
   return (
     <Component

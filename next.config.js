@@ -5,11 +5,13 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 // You might need to insert additional domains in script-src if you are using external services
+// Note: 'unsafe-inline' is kept for next-themes FOUC-prevention inline script.
+// 'unsafe-eval' has been intentionally removed — it defeats XSS protection.
 const ContentSecurityPolicy = `
 default-src 'self';
-script-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.umami.is cloud.umami.is *.umami.is;
+script-src 'self' 'unsafe-inline' analytics.umami.is cloud.umami.is *.umami.is;
 style-src 'self' 'unsafe-inline';
-img-src * blob: data:;
+img-src 'self' blob: data: https:;
 media-src *;
 connect-src *;
 font-src 'self';

@@ -30,7 +30,13 @@ export const SITE_METADATA = {
   goodreadsFeedUrl: '',
   analytics: {
     umamiAnalytics: {
-      websiteId: process.env.NEXT_UMAMI_ID,
+      websiteId: (() => {
+        const id = process.env.NEXT_UMAMI_ID
+        if (!id && process.env.NODE_ENV === 'production') {
+          console.warn('[site-metadata] NEXT_UMAMI_ID is not set; Umami analytics will be disabled.')
+        }
+        return id
+      })(),
       shareUrl: 'https://cloud.umami.is/share/31Vdik5R0u8gWpSx/darshitp.dev',
     },
   },

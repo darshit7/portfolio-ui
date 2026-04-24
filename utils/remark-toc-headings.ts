@@ -1,8 +1,10 @@
 import { slug } from 'github-slugger'
+import type { Heading } from 'mdast'
 import { toString } from 'mdast-util-to-string'
 import { remark } from 'remark'
 import type { Parent } from 'unist'
 import { visit } from 'unist-util-visit'
+import type { VFile } from 'vfile'
 
 export type TocItem = {
   value: string
@@ -16,15 +18,14 @@ export type Toc = TocItem[]
  * Extracts TOC headings from markdown file and adds it to the file's data object.
  */
 function remarkTocHeadings() {
-  return (tree: Parent, file) => {
+  return (tree: Parent, file: VFile) => {
     const toc: Toc = []
-    visit(tree, 'heading', (node) => {
+    visit(tree, 'heading', (node: Heading) => {
       const textContent = toString(node).replace(/<[^>]*(>|$)/g, '')
       if (textContent) {
         toc.push({
           value: textContent,
           url: '#' + slug(textContent),
-          // @ts-expect-error unified heading nodes carry depth but generic node typing omits it.
           depth: node.depth,
         })
       }
@@ -41,6 +42,5 @@ function remarkTocHeadings() {
  */
 export async function extractTocHeadings(markdown: string): Promise<Toc> {
   const vfile = await remark().use(remarkTocHeadings).process(markdown)
-  // @ts-expect-error toc is attached dynamically to vfile data by remarkTocHeadings.
-  return vfile.data.toc
+  return (vfile.data.toc ?? []) as Toc
 }

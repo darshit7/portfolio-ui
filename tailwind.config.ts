@@ -104,7 +104,7 @@ module.exports = {
         70: '70',
         80: '80',
       },
-      typography: ({ theme }) => ({
+      typography: ({ theme }: { theme: (path: string) => string }) => ({
         DEFAULT: {
           css: {
             a: {

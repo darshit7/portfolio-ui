@@ -12,10 +12,10 @@ export interface MDXLayoutRenderer {
 function getMDXComponent(
   code: string,
   globals: Record<string, unknown> = {}
-): React.ComponentType<any> {
+): React.ComponentType<Record<string, unknown>> {
   const scope = { React, ReactDOM, _jsx_runtime, ...globals }
   const fn = new Function(...Object.keys(scope), code)
-  return fn(...Object.values(scope)).default
+  return fn(...Object.values(scope)).default as React.ComponentType<Record<string, unknown>>
 }
 
 // TS transpile it to a require which causes ESM error
@@ -24,11 +24,14 @@ function getMDXComponent(
 export function useMDXComponent(
   code: string,
   globals: Record<string, unknown> = {}
-): React.ComponentType<any> {
+): React.ComponentType<Record<string, unknown>> {
   return React.useMemo(() => getMDXComponent(code, globals), [code, globals])
 }
 
 export function MDXLayoutRenderer({ code, components, ...rest }: MDXLayoutRenderer) {
+  // useMDXComponent uses useMemo so the component reference is stable across renders.
+   
   const Mdx = useMDXComponent(code)
+  // eslint-disable-next-line react-hooks/static-components
   return <Mdx components={components} {...rest} />
 }

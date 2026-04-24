@@ -18,10 +18,10 @@ export function remarkImgToJsx() {
   return (tree: Node) => {
     visit(
       tree,
-      // only visit p tags that contain an img element
-      (node: Parent): node is Parent =>
-        node.type === 'paragraph' && node.children.some((n) => n.type === 'image'),
+      'paragraph',
       (node: Parent) => {
+        // only visit p tags that contain an img element
+        if (!node.children.some((n) => n.type === 'image')) return
         const imageNodeIndex = node.children.findIndex((n) => n.type === 'image')
         const imageNode = node.children[imageNodeIndex] as ImageNode
 

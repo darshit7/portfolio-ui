@@ -1,4 +1,4 @@
-import type { Parent } from 'unist'
+import type { Node, Parent } from 'unist'
 import { visit } from 'unist-util-visit'
 
 /**
@@ -21,14 +21,14 @@ export function remarkCodeTitles() {
 
       parent.children.splice(index, 0, {
         type: 'mdxJsxFlowElement',
-        // @ts-expect-error mdxJsxFlowElement typing does not include custom JSX node fields.
         name: 'CodeTitle',
         attributes: [
           { type: 'mdxJsxAttribute', name: 'lang', value: language },
           { type: 'mdxJsxAttribute', name: 'title', value: title },
         ],
         data: { _xdmExplicitJsx: true },
-      })
+        children: [],
+      } as unknown as Node)
       node.lang = language
     })
 }

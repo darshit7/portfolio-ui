@@ -1,5 +1,6 @@
-import type { Parent } from 'unist'
+import type { Node, Parent } from 'unist'
 import { visit } from 'unist-util-visit'
+import type { VFile } from 'vfile'
 import yaml from 'js-yaml'
 
 /**
@@ -7,10 +8,9 @@ import yaml from 'js-yaml'
  *
  */
 export function remarkExtractFrontmatter() {
-  return (tree: Parent, file) => {
-    visit(tree, 'yaml', (node: Parent) => {
-      // @ts-expect-error vfile data is an open bag; frontmatter is attached dynamically.
-      file.data.frontmatter = yaml.load(node.value)
+  return (tree: Parent, file: VFile) => {
+    visit(tree, 'yaml', (node: Node & { value: string }) => {
+      file.data.frontmatter = yaml.load(node.value) as Record<string, unknown>
     })
   }
 }

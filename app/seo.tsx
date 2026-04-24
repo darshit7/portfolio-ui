@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import { SITE_METADATA } from '~/data/site-metadata'
 
-interface PageSEOProps {
+type PageSEOProps = {
   title: string
   description?: string
   image?: string
-  [key: string]: any
-}
+} & Omit<Metadata, 'title' | 'description'>
 
 export function genPageMetadata({ title, description, image, ...rest }: PageSEOProps): Metadata {
   return {

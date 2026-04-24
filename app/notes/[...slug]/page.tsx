@@ -74,7 +74,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const mainContent = coreContent(note)
   const jsonLd = note.structuredData
 
-  const Layout = LAYOUTS[note.layout || DEFAULT_LAYOUT]
+  const Layout = LAYOUTS[(note.layout ?? DEFAULT_LAYOUT) as keyof typeof LAYOUTS]
 
   return (
     <>

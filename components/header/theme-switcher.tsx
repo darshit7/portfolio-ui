@@ -11,7 +11,7 @@ import {
 } from '@headlessui/react'
 import { Monitor, MoonStar, Sun, SunMoon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useSyncExternalStore } from 'react'
 
 const THEMES = [
   {
@@ -32,11 +32,14 @@ const THEMES = [
 ]
 
 export function ThemeSwitcher() {
-  const [mounted, setMounted] = useState(false)
+  // useSyncExternalStore: server snapshot = false, client snapshot = true.
+  // This avoids useEffect + setState for hydration detection (React 19 idiomatic).
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
   const { theme, setTheme, resolvedTheme } = useTheme()
-
-  // When mounted on client, now we can show the UI
-  useEffect(() => setMounted(true), [])
 
   return (
     <div className="flex items-center">
