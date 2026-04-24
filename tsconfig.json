@@ -28,6 +28,9 @@
       ],
       "contentlayer/generated": [
         "./.contentlayer/generated"
+      ],
+      "vfile": [
+        "./node_modules/vfile/index.d.ts"
       ]
     },
     "plugins": [
