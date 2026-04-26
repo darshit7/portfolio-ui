@@ -35,4 +35,10 @@ export const BLOG_METADATA = [
         "link": "https://medium.com/@darshit7/riding-the-deepseek-wave-running-it-locally-a012cebadac3",
         "date": new Date("2025-01-29")
     },
+    {
+        "id": 7,
+        "title": "Is This Our Great Depression Moment or Just a Reskilling Phase?",
+        "link": "https://medium.com/@darshit7/is-this-our-great-depression-moment-or-just-a-reskilling-phase-58a0d3894ed1?sk=b7321d6e45c88e06e605c634bb4d255b",
+        "date": new Date("2026-04-26")
+    },
 ]
