@@ -1,7 +1,7 @@
 'use client'
 
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react'
-import { clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
 import { clsx } from 'clsx'
 import { Menu, X } from 'lucide-react'
 import { Fragment, useEffect, useRef, useState } from 'react'
@@ -15,23 +15,17 @@ export function MobileNav() {
   const [navShow, setNavShow] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
-  const onToggleNav = () => {
-    setNavShow((status) => {
-      if (navRef.current) {
-        if (status) {
-          enableBodyScroll(navRef.current)
-        } else {
-          // Prevent scrolling
-          disableBodyScroll(navRef.current)
-        }
-      }
-      return !status
-    })
-  }
+  const onToggleNav = () => setNavShow((status) => !status)
 
+  // Lock while the panel is open, release on close and on unmount. The lock
+  // belongs in an effect, not in the setNavShow updater: state updaters must be
+  // pure, and React 19 StrictMode invokes them twice.
   useEffect(() => {
-    return clearAllBodyScrollLocks
-  })
+    const nav = navRef.current
+    if (!navShow || !nav) return
+    disableBodyScroll(nav)
+    return () => enableBodyScroll(nav)
+  }, [navShow])
 
   return (
     <>
