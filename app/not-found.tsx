@@ -18,9 +18,9 @@ export default function NotFound() {
             <p className="mb-8">
               But don&apos;t worry, you can find plenty of other things on my homepage.
             </p>
-            <Link href="/">
-              <Button>Back to homepage</Button>
-            </Link>
+            <Button as={Link} href="/">
+              Back to homepage
+            </Button>
           </div>
         </div>
       </div>
