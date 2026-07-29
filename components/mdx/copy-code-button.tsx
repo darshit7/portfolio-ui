@@ -2,9 +2,7 @@
 
 import { clsx } from 'clsx'
 import { Check, Copy } from 'lucide-react'
-import { useState } from 'react'
-
-let timeoutId: ReturnType<typeof setTimeout> | undefined
+import { useEffect, useRef, useState } from 'react'
 
 export function CopyCodeButton({
   className,
@@ -14,8 +12,11 @@ export function CopyCodeButton({
   parent: 'code-title' | 'code-block'
 }) {
   const [copied, setCopied] = useState(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  function handleCopy(e: React.MouseEvent<HTMLButtonElement>) {
+  useEffect(() => () => clearTimeout(timeoutRef.current), [])
+
+  async function handleCopy(e: React.MouseEvent<HTMLButtonElement>) {
     const button = e.currentTarget
     let preTag: HTMLPreElement | null = null
     if (parent === 'code-block') {
@@ -24,16 +25,24 @@ export function CopyCodeButton({
       const figure = button.parentElement?.nextElementSibling
       preTag = figure?.querySelector('pre') as HTMLPreElement
     }
-    if (preTag) {
-      navigator.clipboard.writeText(preTag.textContent!)
-      setCopied(true)
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => setCopied(false), 2000)
+    if (!preTag) return
+
+    try {
+      // navigator.clipboard is undefined on non-secure origins (e.g. previewing
+      // over a LAN IP), and writeText rejects if permission is denied.
+      await navigator.clipboard.writeText(preTag.textContent ?? '')
+    } catch {
+      return
     }
+
+    setCopied(true)
+    clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => setCopied(false), 2000)
   }
 
   return (
     <button
+      type="button"
       aria-label="Copy code"
       className={clsx([
         'copy-code',
