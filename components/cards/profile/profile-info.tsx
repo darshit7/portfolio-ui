@@ -1,6 +1,8 @@
+'use client'
+
 import { SITE_METADATA } from '~/data/site-metadata'
 import { BriefcaseBusiness, Github, Linkedin, Mail, MapPin } from 'lucide-react'
-import { Fragment } from 'react'
+import { Fragment, useSyncExternalStore } from 'react'
 import XIcon from '~/icons/x.svg'
 import { Twemoji } from '~/components/ui/twemoji'
 
@@ -59,8 +61,19 @@ function getTime() {
   return { time, diff }
 }
 
+// Mount detection, same pattern as components/header/theme-switcher.tsx:
+// server snapshot = false, client snapshot = true.
+const subscribeToNothing = () => () => {}
+const getClientSnapshot = () => true
+const getServerSnapshot = () => false
+
 export function ProfileCardInfo() {
-  const { time, diff } = getTime()
+  // getTime() depends on the visitor's clock and timezone, so it must not run
+  // during SSR: the server renders in UTC and any other timezone disagrees,
+  // which makes React discard and re-render this whole subtree on hydration.
+  const mounted = useSyncExternalStore(subscribeToNothing, getClientSnapshot, getServerSnapshot)
+  const localTime = mounted ? getTime() : null
+
   return (
     <div className="py-4 px-4 md:block md:px-5">
       <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
@@ -102,9 +115,12 @@ export function ProfileCardInfo() {
               >
                 <Twemoji emoji="flag-india" />
               </a>
-              <span>
-                | {time} <span className="text-gray-500 dark:text-gray-400">- {diff}</span>
-              </span>
+              {localTime && (
+                <span>
+                  | {localTime.time}{' '}
+                  <span className="text-gray-500 dark:text-gray-400">- {localTime.diff}</span>
+                </span>
+              )}
             </span>
           </p>
         </div>
