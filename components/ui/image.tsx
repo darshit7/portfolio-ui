@@ -7,17 +7,17 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import ReactMediumImageZoom, { type UncontrolledProps } from 'react-medium-image-zoom'
 
-const loadedImages: string[] = []
+const loadedImages = new Set<string>()
 
 function useImageLoadedState(src: string) {
   const pathname = usePathname()
   const uniqueImagePath = pathname + '__' + src
-  const [loaded, setLoaded] = useState(() => loadedImages.includes(uniqueImagePath))
+  const [loaded, setLoaded] = useState(() => loadedImages.has(uniqueImagePath))
   return [
     loaded,
     () => {
       if (loaded) return
-      loadedImages.push(uniqueImagePath)
+      loadedImages.add(uniqueImagePath)
       setLoaded(true)
     },
   ] as const
@@ -28,7 +28,7 @@ export interface ImageProps extends Omit<NextImageProps, 'src' | 'priority'> {
 }
 
 export function Image(props: ImageProps) {
-  const { alt, src, loading = 'lazy', style, className, ...rest } = props
+  const { alt, src, loading = 'lazy', style, className, onLoad: onLoadProp, ...rest } = props
   const [loaded, onLoad] = useImageLoadedState(src)
 
   return (
@@ -51,8 +51,13 @@ export function Image(props: ImageProps) {
         loading={loading}
         priority={loading === 'eager'}
         quality={100}
-        onLoad={onLoad}
         {...rest}
+        // Composed and placed after {...rest} so a caller-supplied onLoad can
+        // neither clobber the blur-up nor be silently dropped by it.
+        onLoad={(event) => {
+          onLoad()
+          onLoadProp?.(event)
+        }}
       />
     </div>
   )
