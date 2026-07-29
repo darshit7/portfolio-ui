@@ -82,10 +82,12 @@ export function getTimeAgo(time: string | number | Date, now = Date.now()): stri
 }
 
 /**
- * Sorts a list of MDX documents by date in descending order
+ * Sorts a list of MDX documents by date in descending order.
+ * Copies first — callers pass the contentlayer `allNotes` singleton, which is
+ * shared across every render and request in the process.
  */
 export function sortPosts<T extends MDXDocumentDate>(allBlogs: T[], dateKey: string = 'date'): T[] {
-  return allBlogs.sort((a, b) => dateSortDesc(a[dateKey], b[dateKey]))
+  return [...allBlogs].sort((a, b) => dateSortDesc(a[dateKey], b[dateKey]))
 }
 
 function dateSortDesc(a: string, b: string) {
