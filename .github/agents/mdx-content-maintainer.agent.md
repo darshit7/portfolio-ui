@@ -26,7 +26,7 @@ Primary areas:
 
 ## Mandatory process
 
-1. Read AGENTS.md first and follow its validated command order.
+1. Read CLAUDE.md first and follow its validated command order.
 2. Make smallest possible changes.
 3. Preserve existing naming and architecture patterns.
 4. Validate with:
@@ -48,7 +48,7 @@ A change is complete only when:
 - Typecheck succeeds.
 - Build succeeds.
 - Notes listing route and at least one note detail route are still generated.
-- Any migration or caveat is documented in AGENTS.md if behavior changed.
+- Any migration or caveat is documented in CLAUDE.md if behavior changed.
 
 ## Response contract
 
