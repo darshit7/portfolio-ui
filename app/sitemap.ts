@@ -5,10 +5,11 @@ import { SITE_METADATA } from '~/data/site-metadata'
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = SITE_METADATA.siteUrl
 
+  // `path` is the contentlayer flattenedPath, which already starts with "notes/".
   const noteRoutes = allNotes
     .filter((s) => !s.draft)
     .map(({ path, lastmod, date }) => ({
-      url: `${siteUrl}/notes/${path}`,
+      url: `${siteUrl}/${path}`,
       lastModified: lastmod || date,
     }))
 
