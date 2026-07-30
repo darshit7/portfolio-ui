@@ -16,7 +16,9 @@ export const SITE_METADATA = {
   siteUrl: 'https://www.darshitp.dev',
   siteRepo: 'https://github.com/darshit7/portfolio-ui',
   siteLogo: `${process.env.BASE_PATH || ''}/static/images/avatar.jpg`,
-  socialBanner: `${process.env.BASE_PATH || ''}/static/images/projects/darshit-blog.png`,
+  // Must point at a file that exists in public/ — this is the og:image fallback
+  // for every page (app/layout.tsx, app/seo.tsx, app/notes/[...slug]/page.tsx).
+  socialBanner: `${process.env.BASE_PATH || ''}/static/images/avatar.jpg`,
   email: 'darshit7@gmail.com',
   github: 'https://github.com/darshit7',
   x: 'https://twitter.com/_imdp__',
@@ -33,7 +35,9 @@ export const SITE_METADATA = {
       websiteId: (() => {
         const id = process.env.NEXT_UMAMI_ID
         if (!id && process.env.NODE_ENV === 'production') {
-          console.warn('[site-metadata] NEXT_UMAMI_ID is not set; Umami analytics will be disabled.')
+          console.warn(
+            '[site-metadata] NEXT_UMAMI_ID is not set; Umami analytics will be disabled.'
+          )
         }
         return id
       })(),

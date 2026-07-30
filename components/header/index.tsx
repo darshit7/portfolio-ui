@@ -11,7 +11,6 @@ import { HEADER_NAV_LINKS } from '~/data/navigation'
 import { SITE_METADATA } from '~/data/site-metadata'
 import { Logo } from './logo'
 import { MobileNav } from './mobile-nav'
-// import { MoreLinks } from './more-links'
 import { ThemeSwitcher } from './theme-switcher'
 
 let logged = false
@@ -55,7 +54,6 @@ export function Header() {
                 </Link>
               )
             })}
-            {/* <MoreLinks /> */}
           </div>
           <div
             data-orientation="vertical"
