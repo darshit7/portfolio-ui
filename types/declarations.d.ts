@@ -9,6 +9,25 @@
 // `exports` map, so `moduleResolution: bundler` cannot resolve them.
 declare module 'react-dom'
 
+/**
+ * SVG imports are transformed into React components by @svgr/webpack.
+ *
+ * Next declares `*.svg` (loosely, as `any`) via next-env.d.ts ->
+ * next/image-types/global, but next-env.d.ts is gitignored and only generated
+ * by `next dev`/`next build`. Any `tsc` run on a clean checkout -- which is
+ * exactly what CI does, since typecheck runs before build -- would otherwise
+ * fail with 50 TS2307 errors.
+ *
+ * Declaring it here keeps typecheck independent of build artifacts, and types
+ * the components properly instead of `any`. The pattern is more specific than
+ * Next's bare `*.svg`, so TypeScript prefers it and the two do not collide.
+ */
+declare module '~/icons/*' {
+  import type { FunctionComponent, SVGProps } from 'react'
+  const ReactComponent: FunctionComponent<SVGProps<SVGSVGElement> & { title?: string }>
+  export default ReactComponent
+}
+
 // probe-image-size has no bundled types and no DefinitelyTyped package.
 declare module 'probe-image-size' {
   export interface ImageSize {
