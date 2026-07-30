@@ -1,6 +1,5 @@
 import type { Note } from 'contentlayer/generated'
 import { allNotes } from 'contentlayer/generated'
-// import 'css/prism.css'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { MDX_COMPONENTS } from '~/components/mdx'
