@@ -5,15 +5,10 @@ export const HEADER_NAV_LINKS = [
   { href: '/notes', title: 'Notes', emoji: 'spiral-notepad' },
 ]
 
-export const FOOTER_NAV_LINKS = [
-  { href: '/blog', title: 'Blog' },
-  { href: '/notes', title: 'Notes' },
-]
-
-// Resume first: it is the thing a recruiter is looking for.
+// Resume first: it is the thing a recruiter is looking for, and the footer is
+// the only place it appears.
 export const FOOTER_PERSONAL_STUFF = [
   { href: '/static/resume.pdf', title: 'Resume' },
-  { href: '/feed.xml', title: 'RSS' },
   { href: SITE_METADATA.analytics.umamiAnalytics.shareUrl, title: 'Analytics' },
 ]
 

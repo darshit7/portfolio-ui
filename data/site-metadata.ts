@@ -4,8 +4,10 @@ export const SITE_METADATA = {
   lastName: 'Patoliya',
   author: 'Darshit Patoliya',
   headerTitle: `Darshit's blog`,
-  headline: 'A Python developer | AI/ML & Agentic Systems',
+  headline: 'Python developer | Backend & Agentic Systems',
   jobTitle: 'SDE - III',
+  // Drives the "N+ years" copy on the home page so it never goes stale.
+  careerStartDate: '2015-07-01',
   organization: 'Morgan Stanley',
   city: 'Bengaluru',
   cityWiki: '',
