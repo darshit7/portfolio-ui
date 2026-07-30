@@ -270,8 +270,9 @@ export function Brand(props: {
   }
 
   return (
-    <Link href={`${url}?ref=darshitp.dev`} className={className}>
-      <Icon className={iconClassName} fill="currentColor" />
+    // The link's only content is an SVG, so it needs an explicit accessible name.
+    <Link href={`${url}?ref=darshitp.dev`} className={className} aria-label={name}>
+      <Icon className={iconClassName} fill="currentColor" aria-hidden="true" />
     </Link>
   )
 }
