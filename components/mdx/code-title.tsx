@@ -2,7 +2,7 @@ import { clsx } from 'clsx'
 import { Brand, BrandsMap } from '~/components/ui/brand'
 import { CopyCodeButton } from './copy-code-button'
 
-const LANGS_MAP: Record<string, keyof typeof BrandsMap> = {
+export const LANGS_MAP: Record<string, keyof typeof BrandsMap> = {
   js: 'Javascript',
   jsx: 'React',
   ts: 'Typescript',
@@ -17,7 +17,7 @@ const LANGS_MAP: Record<string, keyof typeof BrandsMap> = {
   java: 'Java',
 }
 
-const FILE_NAME_MAP: Record<string, keyof typeof BrandsMap> = {
+export const FILE_NAME_MAP: Record<string, keyof typeof BrandsMap> = {
   '.env': 'Env',
   'tailwind.config.js': 'TailwindCSS',
   'postcss.config.js': 'Postcss',

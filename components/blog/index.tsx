@@ -8,7 +8,7 @@ import type { BlogItem } from '~/types/data'
  * Medium publication is a credibility signal worth surfacing, and the data is
  * already in the link -- nothing new to maintain.
  */
-function getPublication(link: string): string | null {
+export function getPublication(link: string): string | null {
   if (link.includes('stackademic.com') || link.includes('/stackademic/')) return 'Stackademic'
   if (link.includes('/python-in-plain-english/')) return 'Python in Plain English'
   if (link.includes('medium.com')) return 'Medium'

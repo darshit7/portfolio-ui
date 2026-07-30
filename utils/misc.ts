@@ -1,10 +1,16 @@
 import type { MDXDocumentDate } from '~/types/data'
 
+/**
+ * Formats an authored date string. Pinned to UTC: contentlayer dates parse as
+ * UTC midnight, so formatting in the host timezone renders them a day early
+ * anywhere west of UTC.
+ */
 export function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: '2-digit',
+    timeZone: 'UTC',
   })
 }
 
