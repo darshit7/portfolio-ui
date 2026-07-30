@@ -17,7 +17,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          # Pinned rather than read from .nvmrc, which is gitignored and so
+          # never exists in the CI checkout. Keep in sync with .nvmrc (24).
+          node-version: 24
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
