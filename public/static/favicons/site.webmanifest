@@ -1,10 +1,15 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "Darshit's blog – stories, insights, and ideas",
+  "short_name": "Darshit's blog",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/static/favicons/android-chrome-96x96.png",
       "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/favicons/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
   ],
