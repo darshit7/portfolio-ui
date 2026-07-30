@@ -8,6 +8,9 @@
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "eslint . --fix --max-warnings=0",
+    "test": "cross-env TZ=America/Los_Angeles vitest run",
+    "test:watch": "cross-env TZ=America/Los_Angeles vitest",
+    "test:e2e": "playwright test",
     "prepare": "husky",
     "typecheck": "node --no-deprecation ./node_modules/contentlayer2/bin/cli.cjs build && tsc -b"
   },
@@ -55,7 +58,11 @@
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/eslintrc": "^3.3.5",
+    "@playwright/test": "^1.62.0",
     "@svgr/webpack": "^8.1.0",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/body-scroll-lock": "^3.1.2",
     "@types/js-yaml": "^4.0.9",
     "@types/mdast": "^4.0.0",
@@ -63,14 +70,18 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/unist": "^3.0.3",
+    "@vitejs/plugin-react": "^6.0.5",
     "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "husky": "^9.1.7",
+    "jsdom": "^30.0.1",
     "lint-staged": "^15.2.11",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.10"
   },
   "lint-staged": {
     "*.+(js|jsx|ts|tsx|json|css|md|mdx)": [

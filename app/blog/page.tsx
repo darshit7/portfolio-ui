@@ -8,7 +8,7 @@ export default async function BlogPage() {
     <Container className="pt-0 lg:pt-0">
       <PageHeader
         title="Blogs"
-        description=""
+        description="Long-form articles on Python internals, concurrency and AI — published on Medium."
         className="border-b border-gray-200 dark:border-gray-700"
       />
       <div className="py-10">

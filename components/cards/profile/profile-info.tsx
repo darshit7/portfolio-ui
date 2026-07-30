@@ -75,16 +75,16 @@ export function ProfileCardInfo() {
   const localTime = mounted ? getTime() : null
 
   return (
-    <div className="py-4 px-4 md:block md:px-5">
+    <div className="px-4 py-4 md:block md:px-5">
       <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
         {SITE_METADATA.firstName} {SITE_METADATA.lastName}
       </h3>
-      {/* <h5 className="py-2 text-gray-500 dark:text-gray-400">{SITE_METADATA.headline}</h5> */}
+      <p className="py-2 text-gray-500 dark:text-gray-400">{SITE_METADATA.headline}</p>
       <div className="mb-2 mt-4 space-y-4">
         <div className="flex items-center text-gray-700 dark:text-gray-200">
           <BriefcaseBusiness strokeWidth={1.5} size={20} />
           <p className="flex items-center px-2">
-            {/* {SITE_METADATA.jobTitle} @{' '} */}
+            {SITE_METADATA.jobTitle} @{' '}
             <a
               target="_blank"
               href="https://morganstanley.com"

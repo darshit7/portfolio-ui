@@ -15,7 +15,7 @@ export default function Notes() {
     <Container className="pt-0 lg:pt-0">
       <PageHeader
         title="Notes"
-        description=""
+        description="Short technical notes, configurations and references I keep for myself."
         className="border-b border-gray-200 dark:border-gray-700"
       />
       <div className="py-10">

@@ -1,11 +1,34 @@
 import type { MDXDocumentDate } from '~/types/data'
 
+/**
+ * Formats an authored date string. Pinned to UTC: contentlayer dates parse as
+ * UTC midnight, so formatting in the host timezone renders them a day early
+ * anywhere west of UTC.
+ */
 export function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: '2-digit',
+    timeZone: 'UTC',
   })
+}
+
+/**
+ * Whole years elapsed since `startDate`, rolling over on the anniversary
+ * rather than on 1 January.
+ *
+ * Callers are server components on static routes, so this is evaluated at
+ * build time — it advances on the first deploy after each anniversary.
+ */
+export function getYearsSince(startDate: string, now = new Date()): number {
+  const start = new Date(startDate)
+  let years = now.getFullYear() - start.getFullYear()
+  const monthDiff = now.getMonth() - start.getMonth()
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < start.getDate())) {
+    years--
+  }
+  return years
 }
 
 /**
