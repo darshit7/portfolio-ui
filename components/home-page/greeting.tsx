@@ -3,7 +3,7 @@ import { Twemoji } from '~/components/ui/twemoji'
 
 export function Greeting() {
   return (
-    <div
+    <h1
       className={clsx(
         'font-greeting font-extrabold tracking-tight',
         'text-[40px] leading-[60px] md:text-[68px] md:leading-[100px]',
@@ -13,6 +13,6 @@ export function Greeting() {
       )}
     >
       Hello, folks! <Twemoji emoji="waving-hand" size="base" />
-    </div>
+    </h1>
   )
 }

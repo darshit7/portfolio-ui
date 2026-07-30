@@ -13,11 +13,11 @@ export default async function BlogPage() {
       />
       <div className="py-10">
         <div className="grid-cols-1 gap-x-6 space-y-0 md:grid md:space-y-0">
-          {
-            BLOG_METADATA.sort((a, b) => b.date.getTime() - a.date.getTime()).map((item) => (
+          {[...BLOG_METADATA]
+            .sort((a, b) => b.date.getTime() - a.date.getTime())
+            .map((item) => (
               <BlogListItem blog={item} key={item.id} />
-            ))
-          }
+            ))}
         </div>
       </div>
     </Container>

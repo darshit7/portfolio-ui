@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          # Pinned rather than read from .nvmrc, which is gitignored and so
+          # never exists in the CI checkout. Keep in sync with .nvmrc (24).
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Each of these runs contentlayer first, so they must not be parallelised.
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm build

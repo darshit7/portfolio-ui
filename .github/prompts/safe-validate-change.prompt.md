@@ -6,7 +6,7 @@ description: Validate a code change safely in portfolio-ui using the repo-standa
 Validate this change using the repository’s proven workflow and do not skip steps.
 
 Rules:
-- Trust AGENTS.md first; search only if AGENTS.md is incomplete or appears incorrect.
+- Trust CLAUDE.md first; search only if CLAUDE.md is incomplete or appears incorrect.
 - Treat cross-OS node_modules contamination as a common risk in WSL/Windows contexts.
 - Prefer reliable checks over lint when lint tooling is known-broken.
 

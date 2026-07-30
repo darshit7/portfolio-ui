@@ -27,6 +27,11 @@ const FILE_NAME_MAP: Record<string, keyof typeof BrandsMap> = {
 }
 
 export function CodeTitle({ lang, title }: { lang: string; title: string }) {
+  // Unmapped languages (py, go, rust, sql, ...) have no brand icon. Skip the
+  // element entirely rather than rendering Brand's hidden fallback span, which
+  // still consumed a flex gap.
+  const brand = FILE_NAME_MAP[title] || LANGS_MAP[lang]
+
   return (
     <div
       className={clsx([
@@ -36,7 +41,7 @@ export function CodeTitle({ lang, title }: { lang: string; title: string }) {
         'rounded-t-lg border border-gray-100 dark:border-gray-700',
       ])}
     >
-      <Brand name={FILE_NAME_MAP[title] || LANGS_MAP[lang]} as="icon" className="h-5 w-5 rounded" />
+      {brand && <Brand name={brand} as="icon" className="h-5 w-5 rounded" />}
       <span className="font-mono text-sm font-medium">{title}</span>
       <CopyCodeButton
         parent="code-title"

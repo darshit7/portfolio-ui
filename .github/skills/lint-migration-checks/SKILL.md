@@ -48,7 +48,7 @@ Always do preflight before attempting lint:
    - `pnpm run typecheck`
    - `pnpm run build`
    - lint command(s)
-4. Document command timings, errors, and final working sequence in AGENTS.md.
+4. Document command timings, errors, and final working sequence in CLAUDE.md.
 
 ## Output contract
 
