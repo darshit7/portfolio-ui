@@ -10,7 +10,6 @@ import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { remarkAlert } from 'remark-github-blockquote-alert'
-import remarkMath from 'remark-math'
 import { SITE_METADATA } from './data/site-metadata'
 import { remarkCodeTitles } from './utils/remark-code-titles'
 import { remarkExtractFrontmatter } from './utils/remark-extract-frontmatter'
@@ -91,7 +90,6 @@ export default makeSource({
       remarkExtractFrontmatter,
       remarkGfm,
       remarkCodeTitles,
-      remarkMath,
       remarkImgToJsx,
       remarkAlert,
     ],
