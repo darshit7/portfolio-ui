@@ -5,14 +5,10 @@
     "start": "next dev",
     "dev": "node --no-deprecation ./node_modules/contentlayer2/bin/cli.cjs build && cross-env next dev",
     "build": "node --no-deprecation ./node_modules/contentlayer2/bin/cli.cjs build && cross-env next build",
-    "postbuild": "",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "eslint . --fix --max-warnings=0",
     "prepare": "husky",
-    "db:init": "npx drizzle-kit generate && npx drizzle-kit push",
-    "db:studio": "npx drizzle-kit studio --port 8088",
-    "seed": "tsx ./scripts/seed.ts",
     "typecheck": "node --no-deprecation ./node_modules/contentlayer2/bin/cli.cjs build && tsc -b"
   },
   "dependencies": {
