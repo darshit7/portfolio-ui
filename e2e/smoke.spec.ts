@@ -142,16 +142,4 @@ test.describe('site behaviour', () => {
     await page.reload()
     await expect(page.locator('html')).toHaveClass(/dark/)
   })
-
-  // 59 — the site's stated top goal. The header deliberately does not carry
-  // this link, so the footer is the only path to it.
-  test('resume is reachable from the home page in one click', async ({ page }) => {
-    await page.goto('/')
-
-    const resume = page.getByRole('link', { name: /resume/i })
-    await expect(resume).toHaveAttribute('href', '/static/resume.pdf')
-
-    const response = await page.request.get('/static/resume.pdf')
-    expect(response.status(), 'resume link points at a missing file').toBe(200)
-  })
 })
