@@ -4,17 +4,8 @@ import { Footer } from '~/components/footer'
 import { FOOTER_PERSONAL_STUFF, FOOTER_SOCIALS } from '~/data/navigation'
 
 describe('Footer', () => {
-  // 32 — REGRESSION: resume.pdf existed on disk but was reachable from nowhere
-  // in the UI, because the footer rendered only FOOTER_PERSONAL_STUFF[0].
-  it('links to the resume', () => {
-    render(<Footer />)
-
-    const resume = screen.getByRole('link', { name: /resume/i })
-    expect(resume).toHaveAttribute('href', '/static/resume.pdf')
-  })
-
-  // 33 — REGRESSION: the direct cause of the above. Indexing into the array
-  // instead of mapping it silently hid every entry after the first.
+  // 33 — REGRESSION: indexing into the array instead of mapping it silently
+  // hid every entry after the first.
   it('renders every personal link, not just the first', () => {
     render(<Footer />)
 
