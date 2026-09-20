@@ -1,6 +1,15 @@
 import { expect, test, type ConsoleMessage, type Page, type Response } from '@playwright/test'
 
-const PAGES = ['/', '/blog', '/notes', '/notes/vim-configurations']
+const PAGES = [
+  '/',
+  '/blog',
+  '/notes',
+  '/notes/vim-configurations',
+  '/satlab',
+  // A tag carried by both a note and an article, so the page exercises both
+  // halves of the topic route rather than just the notes grid.
+  '/tags/python',
+]
 
 /**
  * @vercel/analytics fetches /_vercel/insights/script.js, which is injected by

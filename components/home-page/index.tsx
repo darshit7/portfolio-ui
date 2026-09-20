@@ -6,12 +6,12 @@ import { Intro } from './intro'
 
 export function Home() {
   return (
-    <Container as="div" className="pt-0">
+    <Container as="div">
       <div className="py-2 md:pb-0 xl:grid xl:grid-cols-3">
         <div className="space-y-4 md:space-y-6 md:pr-8 xl:col-span-2">
           <Greeting />
           <FocusAreas />
-          <div className="text-base leading-7 text-gray-600 dark:text-gray-400 md:text-lg md:leading-8">
+          <div className="text-base leading-7 md:text-lg md:leading-8">
             <Intro />
           </div>
         </div>

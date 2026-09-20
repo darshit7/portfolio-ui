@@ -1,0 +1,164 @@
+---
+heading: 'Link Budgets'
+title: 'Link Budgets: Decibels, Path Loss and Margin'
+date: '2026-09-18'
+category: 'space'
+tags: ['Link Budget', 'RF', 'SatLab', 'Space']
+draft: true
+summary: 'A link budget is one addition problem written in the right units. The units are the hard part.'
+---
+
+A link budget answers one question: does enough signal arrive for the receiver to read
+it? It is a single sum. Gains are positive, losses are negative, and if the total is
+above what the receiver needs, the link works.
+
+The adding up is easy. Getting the units right is not.
+
+## Decibels
+
+A decibel is a ratio written on a log scale. That turns multiplication into addition,
+which is the only reason anyone uses them.
+
+```
+dB = 10 · log10(P_out / P_in)
+```
+
+A few values are worth memorising, because you can add them together:
+
+| dB    | Ratio |
+| ----- | ----- |
+| 3 dB  | 2×    |
+| 6 dB  | 4×    |
+| 10 dB | 10×   |
+| 20 dB | 100×  |
+| 30 dB | 1000× |
+
+So 23 dB is `20 + 3`, which means `100 × 2` = 200 times. And −3 dB means half the power.
+
+> [!WARNING]
+> **dB and dBm are not the same thing.** `dB` is a ratio, so it has no units. `dBm` is an
+> actual amount of power, measured against one milliwatt.
+>
+> You can add a dB to a dBm — that is a gain applied to a power, and the answer is a dBm.
+> You can subtract one dBm from another, and the answer is a dB. But adding two dBm values
+> together means nothing, and it is the most common mistake in a first link budget.
+
+Antennas use a third unit: `dBi`, which compares the antenna to one that radiates equally
+in every direction. It is a ratio, so it adds like a dB.
+
+## Free-space path loss
+
+Most of your signal is lost simply because the wave spreads out as it travels. No
+weather, nothing in the way — just distance.
+
+```
+FSPL(dB) = 20·log10(d) + 20·log10(f) + 32.44
+           d in km, f in MHz
+```
+
+Both of those `20·log10` terms lead to the same rule:
+
+- **Double the distance, lose 6 dB.** At any frequency.
+- **Double the frequency, lose 6 dB.** This is why moving from UHF to X-band is not free.
+  You gain bandwidth and pay for it in path loss, then buy it back with a bigger or more
+  focused antenna.
+
+For a satellite 500 km away on 437 MHz:
+
+```
+FSPL = 20·log10(500) + 20·log10(437) + 32.44
+     = 53.98 + 52.81 + 32.44
+     = 139.2 dB
+```
+
+That is about 10¹⁴ times less power, lost to spreading alone. It is also why every other
+number in the budget is worth fighting for.
+
+## The whole sum
+
+```text:budget.txt
+  Transmit power                      +30.0 dBm   (1 W)
+  Loss in the transmit cable           −1.0 dB
+  Transmit antenna gain                +2.0 dBi    (satellite, near-omni)
+  ──────────────────────────────────────────────
+  EIRP                                +31.0 dBm
+
+  Free-space path loss               −139.2 dB    (500 km, 437 MHz)
+  Atmosphere and polarisation          −2.0 dB
+  Pointing error                       −1.0 dB
+  ──────────────────────────────────────────────
+  Power arriving                     −111.2 dBm
+
+  Receive antenna gain                +14.0 dBi   (ground station yagi)
+  Loss in the receive cable            −1.5 dB
+  ──────────────────────────────────────────────
+  Signal at the receiver              −98.7 dBm
+
+  What the receiver needs            −110.0 dBm   (at this data rate)
+  ──────────────────────────────────────────────
+  LINK MARGIN                          +11.3 dB
+```
+
+A positive margin means the link works. `+11.3 dB` is comfortable — about 13 times more
+power than the minimum.
+
+## How much margin you actually need
+
+**3 dB is not enough.** It sounds like plenty, since it means twice the power you need.
+But the things it has to cover are neither small nor rare:
+
+- **Distance changes during a pass.** The budget above assumed 500 km, which is the
+  satellite straight overhead. When it is low on the horizon at 10°, it is about 1,700 km
+  away — another 10 dB of loss. And a pass spends most of its time low on the horizon.
+- **Rain.** It does not matter at UHF. Above 10 GHz it matters a lot, and heavy rain can
+  cost 10 dB or more at Ka-band.
+- **Pointing error**, which gets worse as the antenna gets more focused and more useful.
+- **Tumbling.** A satellite that cannot control its orientation swings its antenna around,
+  and the gain changes by many dB as it turns. The `+2.0 dBi` above is optimistic for
+  anything that is not stabilised.
+
+Working numbers: **6 dB** for a steady link when the satellite is high, **10 dB** if you
+want the whole pass, and **20 dB** above Ku-band where rain is a real problem.
+
+## Do this before you trust a budget
+
+Work it out again for the worst case, not for the satellite overhead. A budget that works
+overhead and fails at 10° gives you a usable window of a few tens of seconds — and you
+will not find that out until you are watching a receiver that only decodes in the middle
+of a pass.
+
+Here is the distance to a satellite at a given angle above the horizon:
+
+```python:slant_range.py
+import math
+
+RE = 6378.137  # km
+
+
+def slant_range(altitude_km: float, elevation_deg: float) -> float:
+    """Distance to a satellite seen at a given angle above the horizon."""
+    eps = math.radians(elevation_deg)
+    return -RE * math.sin(eps) + math.sqrt(
+        (RE * math.sin(eps)) ** 2 + altitude_km**2 + 2 * RE * altitude_km
+    )
+
+
+for elevation in (90, 30, 10, 5):
+    d = slant_range(500, elevation)
+    fspl = 20 * math.log10(d) + 20 * math.log10(437) + 32.44
+    print(f"{elevation:3d}°   {d:7.1f} km   {fspl:6.1f} dB")
+```
+
+```text:output.txt
+ 90°     500.0 km    139.2 dB
+ 30°     902.3 km    144.3 dB
+ 10°    1702.4 km    149.8 dB
+  5°    2077.6 km    151.5 dB
+```
+
+Between straight overhead and 5° above the horizon you lose 12.3 dB. That is the entire
+margin of a budget that looked healthy, spent on distance alone.
+
+---
+
+_Part of the working notes behind [SatLab](/satlab)._

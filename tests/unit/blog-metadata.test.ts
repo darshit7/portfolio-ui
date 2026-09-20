@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { getPublication } from '~/components/blog'
 import { BLOG_METADATA } from '~/data/blog-metadata'
+import { tagSlug } from '~/utils/tags'
 
 describe('getPublication', () => {
   // 25
@@ -55,5 +56,28 @@ describe('BLOG_METADATA', () => {
       expect(entry.title.trim().length).toBeGreaterThan(0)
       expect(entry.link).toMatch(/^https?:\/\//)
     }
+  })
+
+  // An untagged article never appears on a topic page, which is the only place
+  // notes and articles about the same subject meet.
+  it('has at least one non-empty tag on every entry', () => {
+    for (const entry of BLOG_METADATA) {
+      expect(entry.tags?.length, `${entry.title} has no tags`).toBeGreaterThan(0)
+      for (const tag of entry.tags ?? []) {
+        expect(tag.trim().length, `${entry.title} has an empty tag`).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  // Every tag pill links to /tags/<slug>, and generateStaticParams builds that
+  // list from the same tags -- a tag that slugs to nothing would render a link
+  // to /tags/ and 404.
+  it('has no tag that slugs to an empty string', () => {
+    const offenders = BLOG_METADATA.flatMap((entry) =>
+      (entry.tags ?? [])
+        .filter((tag) => tagSlug(tag).length === 0)
+        .map((tag) => `${entry.id}: ${tag}`)
+    )
+    expect(offenders).toEqual([])
   })
 })

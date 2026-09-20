@@ -1,0 +1,176 @@
+---
+heading: 'TLE to Ground Track'
+title: 'Reading a TLE and Turning It Into a Ground Track'
+date: '2026-09-16'
+category: 'space'
+tags: ['Orbital Mechanics', 'SatLab', 'Python', 'Space']
+draft: true
+summary: 'What the 69 characters of a two-line element set mean, and how to get from one to a map track in about thirty lines of Python.'
+---
+
+A TLE is two lines of 69 characters that describe a satellite's orbit at one moment in
+time. The format is from the 1960s, every column has a fixed meaning, and everyone still
+uses it — because it is what [Space-Track](https://www.space-track.org/) publishes.
+
+Here is the ISS:
+
+```text:iss.tle
+ISS (ZARYA)
+1 25544U 98067A   26257.54791667  .00016717  00000-0  10270-3 0  9995
+2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.49309239 39163
+```
+
+## Line 1: which satellite, and how fast it is falling
+
+| Columns | Field                         | Value above                               |
+| ------- | ----------------------------- | ----------------------------------------- |
+| 03–07   | Catalog number                | `25544`                                   |
+| 10–17   | International designator      | `98067A` — 67th launch of 1998, piece A   |
+| 19–32   | **Epoch**                     | `26257.54791667` — year 2026, day 257.548 |
+| 34–43   | Rate of change of mean motion | `.00016717`                               |
+| 54–61   | **B\*** drag term             | `10270-3` → `0.10270e-3`                  |
+| 65–68   | Element set number            | `999`                                     |
+
+There are two traps in this line.
+
+**The epoch is the date that matters.** A TLE describes where the satellite was at one
+moment, not where it will be. The prediction gets worse by roughly a kilometre a day in
+low orbit, so a TLE that is more than a few days old is a rough guess.
+
+The year uses two digits and wraps at 57: `57–99` means 1957–1999, and `00–56` means
+2000–2056. That rollover happens in 2057 and will break a lot of code.
+
+**The exponent fields are not normal numbers.** `10270-3` means `0.10270 × 10⁻³`. The
+decimal point before the digits is assumed, and the exponent sign is stuck to the end
+with no `e` in front of it. Almost every TLE parser gets this wrong the first time.
+
+## Line 2: the orbit itself
+
+| Columns | Field                          | Value above             |
+| ------- | ------------------------------ | ----------------------- |
+| 09–16   | Inclination (deg)              | `51.6416`               |
+| 18–25   | RAAN (deg)                     | `247.4627`              |
+| 27–33   | Eccentricity                   | `0006703` → `0.0006703` |
+| 35–42   | Argument of perigee (deg)      | `130.5360`              |
+| 44–51   | Mean anomaly (deg)             | `325.0288`              |
+| 53–63   | **Mean motion** (laps per day) | `15.49309239`           |
+| 64–68   | Revolution number              | `39163`                 |
+
+These are five of the [six Keplerian elements](/notes/orbital-elements-primer), with two
+swaps. Instead of the semi-major axis you get **mean motion**, which is laps per day. And
+instead of true anomaly you get mean anomaly. Eccentricity also hides its leading decimal
+point, the same trick as the drag term.
+
+You can convert mean motion back into `a`. Here, `15.493` laps per day is a 92.9-minute
+orbit, which works out to `a ≈ 6,796 km`.
+
+> [!IMPORTANT]
+> The numbers in a TLE are **mean** elements, which only make sense to SGP4. If you feed
+> them into simple two-body maths, you get an orbit that looks reasonable and is tens of
+> kilometres wrong within a day. They only mean what they say when SGP4 reads them.
+
+## Propagating it
+
+Do not write your own SGP4. The reference version has decades of fixes in it, and the
+`sgp4` package on PyPI is a direct port of the official C code.
+
+```bash:install.sh
+pip install sgp4 numpy
+```
+
+```python:ground_track.py
+from datetime import datetime, timedelta, timezone
+
+import numpy as np
+from sgp4.api import Satrec, jday
+
+LINE1 = "1 25544U 98067A   26257.54791667  .00016717  00000-0  10270-3 0  9995"
+LINE2 = "2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.49309239 39163"
+
+satellite = Satrec.twoline2rv(LINE1, LINE2)
+
+
+def gmst(when: datetime) -> float:
+    """How far Earth has turned, in radians. Good to about one arcsecond."""
+    jd, fr = jday(
+        when.year, when.month, when.day, when.hour, when.minute, when.second
+    )
+    t = ((jd + fr) - 2451545.0) / 36525.0
+    seconds = (
+        67310.54841
+        + (876600.0 * 3600.0 + 8640184.812866) * t
+        + 0.093104 * t**2
+        - 6.2e-6 * t**3
+    )
+    return np.radians((seconds % 86400.0) / 240.0)
+
+
+def subpoint(when: datetime) -> tuple[float, float, float]:
+    """The point on the ground directly below the satellite, plus its altitude."""
+    jd, fr = jday(
+        when.year, when.month, when.day, when.hour, when.minute, when.second
+    )
+    error, position, _velocity = satellite.sgp4(jd, fr)
+    if error:
+        raise RuntimeError(f"SGP4 error code {error} at {when}")
+
+    # SGP4 gives you a position in a frame that does not rotate with Earth.
+    # Turning it by the angle above moves it into a frame that does. Skip this
+    # step and your track slides west across the map at 15 degrees an hour.
+    theta = gmst(when)
+    x, y, z = position
+    xf = x * np.cos(theta) + y * np.sin(theta)
+    yf = -x * np.sin(theta) + y * np.cos(theta)
+
+    r = np.sqrt(xf**2 + yf**2 + z**2)
+    lat = np.degrees(np.arcsin(z / r))
+    lon = (np.degrees(np.arctan2(yf, xf)) + 180.0) % 360.0 - 180.0
+    return lat, lon, r - 6378.137
+
+
+start = datetime.now(timezone.utc)
+track = [subpoint(start + timedelta(seconds=30 * i)) for i in range(186)]
+
+for lat, lon, alt in track[:5]:
+    print(f"{lat:+7.2f}  {lon:+8.2f}  {alt:6.1f} km")
+```
+
+## The two mistakes worth naming
+
+**Forgetting to rotate into Earth's frame.** SGP4 gives you a position in a frame that
+stays fixed against the stars. Earth turns underneath it at a bit over 15° an hour. If you
+plot the raw output, the track drifts steadily west. It looks _almost_ right, which is
+what makes this expensive to find.
+
+**Treating Earth as a sphere.** The code above assumes a round Earth, which puts the
+latitude off by up to 0.19°, or about 21 km. That is fine for a picture and not fine for
+pointing an antenna. To do it properly you convert against the WGS-84 ellipsoid;
+`astropy` or `pymap3d` will handle it.
+
+## Fixing the line across the map
+
+One more thing that catches people out when plotting. Longitude jumps from `+180` to
+`−180`, so two points in a row can go from `+179` to `−179`. A plotting library will draw
+a straight line between them, right across the whole map. Break the track wherever the
+jump is too big:
+
+```python:split_track.py
+def split_at_dateline(track, threshold=180.0):
+    """Yields pieces of the track, cutting wherever longitude jumps."""
+    segment = [track[0]]
+    for previous, current in zip(track, track[1:]):
+        if abs(current[1] - previous[1]) > threshold:
+            yield segment
+            segment = []
+        segment.append(current)
+    if segment:
+        yield segment
+```
+
+That is the whole pipeline: read, propagate, rotate, project, split. Everything SatLab
+does after this — passes, visibility windows, link budgets — sits on top of that one
+`subpoint` function.
+
+---
+
+_Part of the working notes behind [SatLab](/satlab)._

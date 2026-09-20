@@ -12,11 +12,9 @@ export function PageHeader({
   className?: string
 }) {
   return (
-    <div className={clsx('space-y-2 pt-6 md:space-y-5', className)}>
-      <h1 className="text-xl font-extrabold leading-0 tracking-tight sm:text-xl sm:leading-0 md:text-xl md:leading-0">
-        {title}
-      </h1>
-      <div className="text-gray-600 dark:text-gray-400 md:text-lg md:leading-7">{description}</div>
+    <div className={clsx('space-y-2 pb-6 pt-6 md:space-y-3', className)}>
+      <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{title}</h1>
+      <div className="text-gray-600 dark:text-gray-400 md:text-lg md:leading-8">{description}</div>
       {children}
     </div>
   )

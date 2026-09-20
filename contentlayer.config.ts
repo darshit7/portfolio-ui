@@ -10,6 +10,7 @@ import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { remarkAlert } from 'remark-github-blockquote-alert'
+import { NOTE_CATEGORY_SLUGS } from './data/note-categories'
 import { SITE_METADATA } from './data/site-metadata'
 import { remarkCodeTitles } from './utils/remark-code-titles'
 import { remarkExtractFrontmatter } from './utils/remark-extract-frontmatter'
@@ -55,7 +56,15 @@ export const Note = defineDocumentType(() => ({
   fields: {
     heading: { type: 'string', required: true },
     title: { type: 'string', required: true },
-    icon: { type: 'string', required: true },
+    // Optional: a note about orbital elements has no brand mark. When absent,
+    // `resolveNoteIcon` falls back to the category's lucide glyph. When present
+    // it must still be a BrandsMap key -- tests/unit/brand.test.ts enforces it,
+    // because an unregistered value renders nothing at all, silently.
+    icon: { type: 'string' },
+    // enum, not string: a typo fails the contentlayer build instead of quietly
+    // producing a note that belongs to no section on /notes.
+    category: { type: 'enum', options: NOTE_CATEGORY_SLUGS, required: true },
+    tags: { type: 'list', of: { type: 'string' } },
     date: { type: 'date', required: true },
     lastmod: { type: 'date' },
     draft: { type: 'boolean' },
@@ -69,7 +78,9 @@ export const Note = defineDocumentType(() => ({
       type: 'json',
       resolve: (doc) => ({
         '@context': 'https://schema.org',
-        '@type': 'CodeSnippet',
+        // Was 'CodeSnippet', which stopped being true once notes covered
+        // orbital mechanics and reading as well as configs.
+        '@type': 'TechArticle',
         headline: doc.title,
         datePublished: doc.date,
         dateModified: doc.lastmod || doc.date,
