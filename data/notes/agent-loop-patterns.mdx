@@ -1,0 +1,192 @@
+---
+heading: 'Agent Loop Patterns'
+title: 'Agent Loop Patterns That Held Up in Real Projects'
+date: '2026-09-12'
+category: 'ai'
+tags: ['Agents', 'AI/ML', 'LLMs', 'Python']
+draft: false
+summary: 'The tool-calling loop is about twenty lines. Everything that makes it work in production is in the other two hundred.'
+---
+
+An agent loop is simple. Call the model, check if it asked to use a tool, run the tool,
+add the result to the conversation, repeat until it stops asking.
+
+```python:loop.py
+def run(messages, tools, max_turns=20):
+    for _ in range(max_turns):
+        response = model.call(messages=messages, tools=tools)
+        messages.append(response)
+
+        if not response.tool_calls:
+            return response
+
+        for call in response.tool_calls:
+            result = dispatch(call)
+            messages.append(tool_result(call.id, result))
+
+    raise TurnLimitExceeded()
+```
+
+That is the whole idea. What follows is what I had to add once real inputs showed up.
+
+## Send errors back to the model
+
+The obvious thing is to let a failing tool raise an exception. That is usually wrong. If
+you give the model the error text, it will normally fix its own call — a wrong argument,
+a path that does not exist, a filter that matched nothing.
+
+```python:dispatch.py
+def dispatch(call):
+    try:
+        return TOOLS[call.name](**call.arguments)
+    except KeyError:
+        # The model made up a tool. Tell it which ones are real.
+        return f"Error: no tool named {call.name!r}. Available: {sorted(TOOLS)}"
+    except (TypeError, ValueError) as exc:
+        # Bad arguments. The model is good at fixing these.
+        return f"Error: {exc}. Check the argument types and try again."
+    except Exception as exc:
+        # Something unexpected. Report it, but keep internals out of the chat.
+        log.exception("tool %s failed", call.name)
+        return f"Error: {call.name} failed: {type(exc).__name__}"
+```
+
+The rule is: **if the model can fix it, send it back as text. If it cannot, raise.** A
+timeout it can retry is text. A missing API key it can never provide is an exception —
+otherwise you spend twenty turns watching it retry something that can never work.
+
+## You need two limits, not one
+
+A turn limit is the obvious one, and it is not enough. A single turn can call a tool that
+returns 200 KB, and three of those will fill the context window. Track both:
+
+```python:budget.py
+class Budget:
+    def __init__(self, max_turns=20, max_tokens=150_000):
+        self.max_turns = max_turns
+        self.max_tokens = max_tokens
+        self.turns = 0
+
+    def check(self, messages) -> str | None:
+        """Returns a reason to stop, or None to keep going."""
+        self.turns += 1
+        if self.turns > self.max_turns:
+            return f"turn limit ({self.max_turns})"
+        used = count_tokens(messages)
+        if used > self.max_tokens:
+            return f"context limit ({used} > {self.max_tokens})"
+        return None
+```
+
+Tool results also need their own limit, applied where they are produced:
+
+```python:truncate.py
+def truncate(text: str, limit: int = 8_000) -> str:
+    """Keeps both ends: the start has the structure, the end has the newest rows."""
+    if len(text) <= limit:
+        return text
+    half = limit // 2
+    omitted = len(text) - limit
+    return f"{text[:half]}\n\n... [{omitted} characters omitted] ...\n\n{text[-half:]}"
+```
+
+Keeping both ends matters more than it looks. Log files put the error at the bottom.
+Query results put the column names at the top. If you keep only the first N characters,
+you usually throw away the half that had the answer.
+
+## Tool descriptions are prompts too
+
+The single most useful change I ever made to an agent was not in the loop. It was
+rewriting a tool description.
+
+```python:tools.py
+# Before: correct, and useless.
+{
+    "name": "search",
+    "description": "Search the database.",
+    "parameters": {"query": {"type": "string"}},
+}
+
+# After: says when to use it and what you get back.
+{
+    "name": "search",
+    "description": (
+        "Full-text search over customer support tickets. "
+        "Returns up to 20 matches, newest first, with ticket ID, "
+        "title and a 200-character excerpt. "
+        "Use this to find tickets by topic. Use `get_ticket` when you "
+        "already have an ID. It matches whole words, not parts of words — "
+        "'refund' will not match 'refunded'."
+    ),
+    "parameters": {...},
+}
+```
+
+Everything in the second version answers a question the model would otherwise have to
+guess: when to use it, what comes back, how much of it, and how the matching works. When
+a model uses a tool wrongly, it is usually the description that is broken.
+
+## Run parallel calls in parallel
+
+Models often ask for several independent tools in one turn. Running them one after another
+throws away the benefit:
+
+```python:parallel.py
+import asyncio
+
+
+async def dispatch_all(calls):
+    """Independent calls run at the same time; results stay in order."""
+    results = await asyncio.gather(
+        *(dispatch_async(c) for c in calls),
+        return_exceptions=True,
+    )
+    return [
+        tool_result(call.id, format_error(r) if isinstance(r, Exception) else r)
+        for call, r in zip(calls, results)
+    ]
+```
+
+`return_exceptions=True` is doing something specific. Without it, one failed call cancels
+all the others, and the model gets nothing back — including the calls that had already
+worked. It then retries everything, including the parts that were fine.
+
+## Only add to the conversation, never edit it
+
+It is tempting to rewrite history: drop old tool results, summarise the middle, delete a
+bad call. Avoid it for as long as you can. A conversation that silently changed underneath
+the model produces bugs you cannot reproduce from any log.
+
+When you really do have to shrink it, make the change visible:
+
+```python:compact.py
+def compact(messages, keep_recent=6):
+    """Replaces the middle with a summary and leaves a note saying so."""
+    if len(messages) <= keep_recent + 2:
+        return messages
+    head, middle, tail = messages[:1], messages[1:-keep_recent], messages[-keep_recent:]
+    summary = summarise(middle)
+    return [
+        *head,
+        {"role": "user", "content": f"[{len(middle)} earlier messages summarised]\n{summary}"},
+        *tail,
+    ]
+```
+
+That note is not decoration. When behaviour changes after a compaction, you want the
+transcript to say when it happened.
+
+## What I stopped doing
+
+- **Retrying the whole loop when something fails.** Retry the _tool_. Starting the loop
+  again throws away everything the model had already figured out.
+- **Letting the model stop whenever it wants.** It will stop eventually. "Eventually" is
+  not a limit.
+- **One big tool with a `mode` argument.** Models choose between five well-named tools far
+  more reliably than between five values of a string.
+- **Hiding errors to keep the conversation tidy.** A tidy transcript that leaves out the
+  reason for a wrong answer is worse than a messy one.
+
+---
+
+_See also: [prompts I reuse for code review](/notes/prompts-for-code-review)._

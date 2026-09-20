@@ -54,7 +54,12 @@ export async function generateMetadata(props: {
 }
 
 export const generateStaticParams = async () => {
-  return allNotes.map((n) => ({ slug: n.slug.split('/').map((name) => decodeURI(name)) }))
+  // Must use the same filtered list the page does. Generating params from raw
+  // `allNotes` prerenders a path for every draft, which then 404s at the
+  // findIndex below -- harmless with no drafts, visible as soon as there is one.
+  return allCoreContent(sortPosts(allNotes)).map((n) => ({
+    slug: n.slug.split('/').map((name) => decodeURI(name)),
+  }))
 }
 
 export default async function Page(props: { params: Promise<{ slug: string[] }> }) {

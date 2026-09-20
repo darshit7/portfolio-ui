@@ -17,7 +17,13 @@ function mdxFiles(dir: string): string[] {
 describe('brand registry integrity', () => {
   // 23 — documented footgun: an `icon` value that is not a BrandsMap key
   // destructures from undefined and renders nothing at all, silently.
-  it('every note icon is a registered brand', () => {
+  //
+  // `icon` is optional since notes stopped being only about software -- there
+  // is no brand mark for orbital mechanics or a book, and those notes fall back
+  // to their category's lucide glyph via NoteIcon. Omitting it is therefore
+  // fine; naming a brand that does not exist is still the silent failure this
+  // test was written for.
+  it('every note icon that is set names a registered brand', () => {
     const files = mdxFiles(NOTES_DIR)
     expect(files.length).toBeGreaterThan(0)
 
@@ -25,10 +31,8 @@ describe('brand registry integrity', () => {
     for (const file of files) {
       const source = readFileSync(file, 'utf8')
       const match = source.match(/^icon:\s*['"]?([^'"\n]+)['"]?\s*$/m)
-      if (!match) {
-        offenders.push(`${file}: no icon in frontmatter`)
-        continue
-      }
+      if (!match) continue
+
       const icon = match[1].trim()
       if (!(icon in BrandsMap)) {
         offenders.push(`${file}: icon "${icon}" is not a BrandsMap key`)

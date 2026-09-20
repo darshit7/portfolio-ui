@@ -55,6 +55,7 @@ Strict mode, plus two settings that shape every edit:
 Path aliases: `~/*` → repo root, `app/*`, `contentlayer/generated`. (`jsconfig.json` also declares stale `@/*` aliases; prefer `~/*`, which is what the codebase actually uses.)
 
 Two type shims exist because `moduleResolution: bundler` can't see through some packages' `exports` maps — read them before fighting a resolution error:
+
 - `types/declarations.d.ts` — `react-dom` and `probe-image-size`.
 - `types/vfile.d.ts` — augments VFile's `Data` so remark plugins pass typed `frontmatter`/`toc`. Paired with a `"vfile"` entry in `tsconfig.json` `paths` pointing directly at `node_modules/vfile/index.d.ts`. Fragile; don't remove one without the other.
 
@@ -62,14 +63,14 @@ The Contentlayer warning about a missing `compilerOptions.baseUrl` on every buil
 
 ## Config notes
 
-- `next.config.js` sets a strict CSP. `'unsafe-eval'` was deliberately removed; `'unsafe-inline'` for `script-src` is retained only for the next-themes FOUC script. Adding a third-party script means adding its host here.
+- `next.config.js` sets a strict CSP, built by `contentSecurityPolicy(isDev)` and keyed off `PHASE_DEVELOPMENT_SERVER`. `'unsafe-eval'` is deliberately absent from the **production** policy; it is added for `next dev` only, because React's development build calls `eval()` for debugging features and refuses to boot without it. `va.vercel-scripts.com` is dev-only for the same reason (`@vercel/analytics` serves its debug script from there; production loads it same-origin). `'unsafe-inline'` for `script-src` is retained in both, only for the next-themes FOUC script. Adding a third-party script means adding its host here — and if it only loads in dev, add it to the `isDev` branch so the shipped policy stays strict.
 - SVG imports go through `@svgr/webpack`, configured **twice** — under `turbopack.rules` (dev/build default) and `webpack()`. Change both or behavior diverges.
 - Env vars: `NEXT_UMAMI_ID` (analytics; warns if unset in prod), `BASE_PATH`, `EXPORT`, `UNOPTIMIZED`, `ANALYZE`.
 
 ## Working rules
 
 - **Conventional commits are required** (`commitlint.config.js`, `@commitlint/config-conventional`). Husky's `prepare` script is wired but only `.husky/_` scaffolding is present, so nothing enforces this locally — the discipline is on you. Match existing history: `feat:`, `fix:`, `chore:`.
-- **Don't edit `data/site-metadata.ts`, `data/blog-metadata.ts`, or `data/notes/**` unless asked.** These are the author's personal identity, links, and writing — not code to refactor.
+- **Don't edit `data/site-metadata.ts`, `data/blog-metadata.ts`, or `data/notes/**` unless asked.\*\* These are the author's personal identity, links, and writing — not code to refactor.
 - Keep edits in their layer: routes/metadata in `app/`, reusable UI in `components/`, content model in `contentlayer.config.ts` + `utils/remark-*`, site-wide config in `data/`.
 - `pnpm lint` runs with `--fix` and will rewrite files. Check `git status` afterward if the working tree mattered.
 

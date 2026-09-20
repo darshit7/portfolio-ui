@@ -5,7 +5,7 @@ import { getYearsSince } from '~/utils/misc'
 export function Intro() {
   return (
     <>
-      <p className="text-neutral-900 dark:text-neutral-200">
+      <p>
         I&apos;m{' '}
         <span className="font-medium">
           {SITE_METADATA.firstName} {SITE_METADATA.lastName}
@@ -14,7 +14,7 @@ export function Intro() {
         with {getYearsSince(SITE_METADATA.careerStartDate)}+ years of experience building and
         evolving backend systems in the Python <Twemoji emoji="python" /> ecosystem.
       </p>
-      <p className="mt-5 text-neutral-900 dark:text-neutral-200">
+      <p className="mt-5">
         Over the past several years, my work has focused on developing AI/ML driven systems, where I
         design and evolve backend services, supporting data pipelines, and explore how intelligent{' '}
         <Twemoji emoji="brain" /> models and agentic architectures
@@ -22,7 +22,7 @@ export function Intro() {
         including deployments that span cloud and edge environments.
       </p>
 
-      <p className="mt-5 text-neutral-900 dark:text-neutral-200">
+      <p className="mt-5">
         Beyond engineering, I’m curious about how complex systems emerge and adapt-whether in
         technology, nature, or the universe <Twemoji emoji="ringed-planet" />
         itself. Outside of work, I enjoy time in nature <Twemoji emoji="snow-capped-mountain" />,

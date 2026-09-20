@@ -1,0 +1,161 @@
+---
+heading: 'Python Concurrency'
+title: 'Threads, Async or Processes: A Decision Table'
+date: '2026-09-08'
+icon: 'Python'
+category: 'engineering'
+tags: ['Python', 'Concurrency', 'Performance', 'Async']
+draft: false
+summary: 'One question decides this, and it is not the question most people ask first.'
+---
+
+Nearly every argument about Python concurrency comes down to one question: **what is the
+code waiting for?**
+
+| Waiting for                               | Use       | Why                                                     |
+| ----------------------------------------- | --------- | ------------------------------------------------------- |
+| Network, disk, another program            | `asyncio` | Thousands of waits on one thread, no GIL problems       |
+| The same, but the library blocks          | Threads   | `ThreadPoolExecutor` around the blocking calls          |
+| CPU work — parsing, maths, compression    | Processes | The only way to use more than one core                  |
+| CPU work, but inside NumPy/Polars/PyTorch | Nothing   | They already release the GIL and use threads themselves |
+| Nothing. It is just slow                  | Nothing   | Fix the algorithm first                                 |
+
+That last row is serious. Concurrency turns a 10-second job into a 3-second job. A
+database index turns it into 50 milliseconds.
+
+## What the GIL actually does
+
+The Global Interpreter Lock means **only one thread runs Python code at a time**. That
+leads to two facts, and they point in opposite directions:
+
+- **Threads do not help with CPU work.** Four threads doing maths run about as fast as
+  one, plus the cost of switching between them. Sometimes slower.
+- **Threads do help with waiting.** The GIL is released while a thread waits on the
+  network or the disk, so a waiting thread is not blocking anyone. A hundred threads
+  waiting on a hundred requests works fine.
+
+The common mistake is learning the first fact and turning it into "threads are useless in
+Python". They are useless for _computing_. They are the right tool for _waiting_.
+
+> [!NOTE]
+> Python 3.13 added an optional build with no GIL (PEP 703), and 3.14 continues that work.
+> It is real, and it changes the first point above. But you have to opt in, single-threaded
+> code runs a little slower on it, and many C extensions are still catching up. Worth
+> following; not worth planning around yet for most work. I wrote about where this is
+> going in
+> [Beyond the GIL](https://medium.com/python-in-plain-english/beyond-the-gil-future-of-parallel-computing-in-python-38ef2a80555c).
+
+## Async, when you control the libraries
+
+```python:fetch.py
+import asyncio
+
+import httpx
+
+
+async def fetch_all(urls: list[str], concurrency: int = 20) -> list[str]:
+    """Fetches every URL, with at most `concurrency` requests running at once."""
+    limit = asyncio.Semaphore(concurrency)
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        async def one(url: str) -> str:
+            async with limit:
+                response = await client.get(url)
+                response.raise_for_status()
+                return response.text
+
+        return await asyncio.gather(*(one(u) for u in urls))
+```
+
+The semaphore is not optional. `gather` over 10,000 URLs opens 10,000 connections at
+once. You will run out of file handles, or get rate-limited and banned. Always put a cap
+on it.
+
+**One blocking call ruins the whole loop.** A single `requests.get` or `time.sleep`
+inside a coroutine freezes every other task on that thread. When you have to call
+blocking code from async, move it off the loop:
+
+```python:offload.py
+result = await asyncio.to_thread(blocking_function, arg)
+```
+
+## Threads, when the library blocks
+
+Most of the time you do not get to choose. The database driver is synchronous and that is
+that.
+
+```python:threads.py
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+
+def fetch_all(urls: list[str], workers: int = 20) -> list[str]:
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(requests.get, url): url for url in urls}
+        results = []
+        for future in as_completed(futures):
+            try:
+                results.append(future.result().text)
+            except Exception:
+                # .result() raises in *this* thread. Without this try block the
+                # error disappears and you just get a shorter list, with no
+                # sign that anything went wrong.
+                log.exception("failed: %s", futures[future])
+        return results
+```
+
+That `try` is the part people leave out. A future keeps its exception to itself until
+someone calls `.result()`, so a pool you do not check fails silently and returns fewer
+results than you asked for.
+
+## Processes, for real computation
+
+```python:processes.py
+from concurrent.futures import ProcessPoolExecutor
+
+
+def parse_all(paths: list[str]) -> list[dict]:
+    # max_workers defaults to os.cpu_count(). chunksize spreads the cost of
+    # sending data between processes -- without it, that cost can be larger
+    # than the work itself.
+    with ProcessPoolExecutor() as pool:
+        return list(pool.map(parse_one, paths, chunksize=50))
+```
+
+Three things decide whether this is worth doing:
+
+1. **Everything sent between processes gets pickled**, both arguments and results. A
+   worker that receives and returns a big DataFrame can spend more time packing it than
+   computing.
+2. **Processes do not share memory.** Anything set up at module level runs again in each
+   worker.
+3. **The function must be importable.** No lambdas, no closures, no functions defined
+   inside another function.
+
+If each item takes less than about a millisecond, processes will be slower than a plain
+loop. Measure before you believe otherwise.
+
+## The decision, as a flowchart
+
+```text:decide.txt
+Is it actually slow?                  no  -> stop
+  |
+  yes
+  v
+Have you profiled it?                 no  -> profile it
+  |
+  yes
+  v
+Is the time spent waiting, or computing?
+  |
+  +-- waiting --> Does the library support async?
+  |                 yes -> asyncio
+  |                 no  -> ThreadPoolExecutor
+  |
+  +-- computing --> Is it already in NumPy / Polars / PyTorch?
+                      yes -> it already uses threads; tune it instead
+                      no  -> ProcessPoolExecutor
+                             (if each item takes < ~1 ms, skip it)
+```
+
+The second box is the one people skip, and skipping it is how you end up speeding up the
+5% of the runtime that was never the problem.

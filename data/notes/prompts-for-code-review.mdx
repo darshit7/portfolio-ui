@@ -1,0 +1,137 @@
+---
+heading: 'Code Review Prompts'
+title: 'Prompts I Reuse for Code Review'
+date: '2026-09-10'
+category: 'ai'
+tags: ['Prompts', 'AI/ML', 'Code Review']
+draft: false
+summary: 'A small set of review prompts that find real problems instead of giving compliments, and why each rule is in there.'
+---
+
+If you ask a model to "review this code", you get a summary of what the code does, three
+compliments, and a suggestion to add error handling. That is not useful.
+
+The prompts below are the ones I kept. Each one earns its place by finding something I
+would have missed.
+
+They all follow the same idea: **say what kind of problem you want, ask for proof, and
+close the easy exits.**
+
+## The general pass
+
+```text:review.txt
+Review this diff for correctness bugs only.
+
+For each problem, tell me:
+  1. The exact input or state that causes it
+  2. What goes wrong
+  3. Which line it starts on
+
+Rules:
+- If I cannot reproduce it from your description, it is not a real
+  finding. Remove it.
+- Do not comment on style, naming, formatting or test coverage.
+- If you find nothing, say "no correctness issues found" and stop.
+  Do not pad the list.
+
+Sort by severity, worst first.
+```
+
+The last rule does most of the work. If you do not tell the model that finding nothing is
+allowed, it will invent problems to seem helpful, and then you are reading noise.
+
+## Concurrency
+
+This gets its own prompt because the ways concurrent code fails are specific enough to
+list, and listing them is what makes the model actually look for them.
+
+```text:concurrency.txt
+This code runs concurrently. Go through it as if you were trying to
+break it by controlling the order things happen.
+
+Check for:
+- Shared data changed without a lock
+- A check followed by an action, where something can change in between
+- Locks taken in different orders on different paths (deadlock)
+- An await between reading a value and writing based on it
+- Cleanup that does not run if the task is cancelled halfway
+- Assuming a callback runs exactly once
+
+For each problem, show me the exact order of steps that breaks it,
+as a numbered list across two threads or tasks.
+```
+
+"Show me the exact order of steps" is the important part. It turns a vague worry into
+something I can check. It also makes the model throw away its own weak guesses, because
+it cannot write the sequence out.
+
+## The one that finds the most bugs
+
+```text:assumptions.txt
+List every assumption this code makes about its inputs
+that the code does not actually check.
+
+For each one: what breaks when the assumption is false, and how
+someone could make it false, on purpose or by accident.
+```
+
+Short, and it finds more than anything else here. Most real bugs are not mistakes in the
+logic. They are rules that used to be true and quietly stopped being true.
+
+## Before a refactor
+
+```text:invariants.txt
+I am about to refactor this. Before I start, tell me what I am
+likely to break.
+
+List the rules this code depends on that are not obvious when you
+read it. Include:
+- Order that matters but is not written down
+- State that must be set before something else reads it
+- Errors that are caught and ignored on purpose, and why
+- Anything that looks unnecessary but is not
+
+Give me the line number for each one.
+```
+
+This is a check you run _before_ you touch the code, not after. It is worth more than a
+review afterwards, because by then nobody remembers what the old code guaranteed.
+
+## Checking the model's own work
+
+```text:self-review.txt
+You wrote this. Now argue that it is wrong.
+
+Make the strongest case against this implementation. Do not defend it.
+If the strongest case turns out to be weak, say so and explain why —
+but make the case first.
+```
+
+Models agree with you by default and will back down as soon as you push, so asking "are
+you sure?" tells you nothing. Giving the model the opposing role up front gets you a real
+critique instead of an apology.
+
+## What does not work
+
+- **"Find all the bugs."** Too broad. You get a quick look at everything and a careful
+  look at nothing.
+- **"Is this good code?"** That asks for an opinion. You want observations.
+- **"Are you sure?"** after an answer. The model will change its mind whether it was right
+  or wrong, so the reply carries no information.
+- **Pasting a whole file for a three-line change.** The model spends its attention on code
+  that did not change. Give it the diff plus only the functions the diff calls.
+
+## The pattern
+
+Every prompt above does the same four things:
+
+1. **Picks one kind of problem** instead of asking for everything.
+2. **Lists the failure modes**, so the model searches instead of guessing.
+3. **Asks for a reproduction**, which filters out speculation.
+4. **Allows an empty answer**, which removes the reason to make things up.
+
+Most review prompts get the fourth one wrong.
+
+---
+
+_See also: [agent loop patterns](/notes/agent-loop-patterns)._

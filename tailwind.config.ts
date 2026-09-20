@@ -14,62 +14,15 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
-      keyframes: {
-        wiggle: {
-          '0%': { transform: 'rotate(0deg)' },
-          '50%': { transform: 'rotate(180deg)' },
-          '100%': { transform: 'rotate(360deg)' },
-        },
-        'music-bar-1': {
-          '0%, 100%': { height: '0%' },
-          '50%': { height: '70%' },
-        },
-        'music-bar-2': {
-          '0%, 100%': { height: '50%' },
-          '25%': { height: '0%' },
-          '75%': { height: '100%' },
-        },
-        'music-bar-3': {
-          '0%, 100%': { height: '70%' },
-          '15%': { height: '100%' },
-          '65%': { height: '0%' },
-        },
-        'music-bar-4': {
-          '0%, 100%': { height: '50%' },
-          '35.7%': { height: '0%' },
-          '85.7%': { height: '70%' },
-        },
-        'scale-up': {
-          '0%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.18)' },
-          '100%': { transform: 'scale(1)' },
-        },
-      },
-      animation: {
-        wiggle: 'wiggle 7s linear infinite',
-        'music-bar-1': 'music-bar-1 .8s linear infinite',
-        'music-bar-2': 'music-bar-2 .8s linear infinite',
-        'music-bar-3': 'music-bar-3 .8s linear infinite',
-        'music-bar-4': 'music-bar-4 .8s linear infinite',
-        'scale-up': 'scale-up 150ms ease-in-out forwards',
-      },
       boxShadow: {
-        demure: 'rgba(0, 0, 0, 0.3) 0 35px 60px -15px',
-        'book-pages': `10px 40px 40px -10px #00000030, inset -2px 0 0 gray,
-                        inset -3px 0 0 #dbdbdb, inset -4px 0 0 white, inset -5px 0 0 #dbdbdb,
-                        inset -6px 0 0 white, inset -7px 0 0 #dbdbdb, inset -8px 0 0 white,
-                        inset -9px 0 0 #dbdbdb`,
-        mondegreen: `5px 5px rgba(0, 98, 90, 0.4),
-                      10px 10px rgba(0, 98, 90, 0.3),
-                      15px 15px rgba(0, 98, 90, 0.2),
-                      20px 20px rgba(0, 98, 90, 0.1),
-                      25px 25px rgba(0, 98, 90, 0.05)`,
-      },
-      lineHeight: {
-        11: '2.75rem',
-        12: '3rem',
-        13: '3.25rem',
-        14: '3.5rem',
+        // The profile card's lift. Two variants because the light card floats off
+        // a white page, while the dark card is a stepped emerald stack.
+        card: 'rgba(0, 0, 0, 0.3) 0 35px 60px -15px',
+        'card-stack': `5px 5px rgba(5, 150, 105, 0.4),
+                       10px 10px rgba(5, 150, 105, 0.3),
+                       15px 15px rgba(5, 150, 105, 0.2),
+                       20px 20px rgba(5, 150, 105, 0.1),
+                       25px 25px rgba(5, 150, 105, 0.05)`,
       },
       fontFamily: {
         sans: ['var(--font-nunito)', ...fontFamily.sans],
@@ -77,27 +30,20 @@ module.exports = {
         mono: ['var(--font-jetbrains-mono)', ...fontFamily.mono],
       },
       colors: {
-        primary: colors.indigo,
+        // The single accent. Everything that wants to look "active" -- links,
+        // underlines, focus rings, buttons, inline code -- reads from here.
+        primary: colors.emerald,
         dark: '#1f1f1f',
-        spotify: '#1DB954',
-        goodreads: '#372213',
-        facebook: '#1877f2',
-        twitter: '#0f1419',
-        linkedin: '#0077B5',
+        // Code-block surfaces, paired with the Shiki themes in contentlayer.config.ts.
         'solarized-light': '#fdfaf6',
         'github-dark-dimmed': '#22272e',
         'code-block': '#36313d',
       },
       width: {
         4.5: '1.125rem',
-        5.5: '1.375rem',
       },
       height: {
         4.5: '1.125rem',
-        5.5: '1.375rem',
-      },
-      spacing: {
-        15: '3.75rem',
       },
       zIndex: {
         60: '60',
@@ -108,12 +54,14 @@ module.exports = {
         DEFAULT: {
           css: {
             a: {
-              color: theme('colors.primary.500'),
+              // 700 rather than 500: emerald needs the darker step to clear
+              // WCAG AA (5.48:1) against a white page.
+              color: theme('colors.primary.700'),
               'text-underline-offset': '4px',
               '&:hover': {
-                color: `${theme('colors.primary.600')}`,
+                color: `${theme('colors.primary.800')}`,
               },
-              code: { color: theme('colors.primary.400') },
+              code: { color: theme('colors.primary.700') },
             },
             'h1,h2,h3,h4,h5,h6': {
               scrollMarginTop: '6rem',
@@ -183,6 +131,7 @@ module.exports = {
                 width: '2.25rem',
               },
             },
+            // Warm tint, chosen to sit on the warm `solarized-light` code surface.
             '[data-highlighted-line]': {
               backgroundColor: '#fbf0ea',
               borderLeft: '4px solid theme(colors.gray.400)',
@@ -199,9 +148,15 @@ module.exports = {
               borderBottom: '2px solid theme(colors.gray.800)',
             },
             code: {
-              color: theme('colors.indigo.500'),
+              color: theme('colors.primary.700'),
               fontWeight: '500',
             },
+            // @tailwindcss/typography decorates every inline <code> with
+            // literal backticks via ::before/::after. The accent colour and the
+            // mono face already mark it as code, so the quotes are noise -- and
+            // they land inside the text, so "`a`" reads as part of the prose.
+            'code::before': { content: 'none' },
+            'code::after': { content: 'none' },
             '.image-container': {
               width: 'fit-content',
               marginLeft: 'auto',
@@ -243,9 +198,10 @@ module.exports = {
         invert: {
           css: {
             a: {
+              // 400 on the dark page: 8.57:1, the mirror of 700-on-white.
               color: theme('colors.primary.400'),
               '&:hover': {
-                color: `${theme('colors.primary.400')}`,
+                color: `${theme('colors.primary.300')}`,
               },
               code: { color: theme('colors.primary.400') },
             },

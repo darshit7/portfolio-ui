@@ -1,0 +1,168 @@
+---
+heading: 'Orbital Elements'
+title: 'The Six Keplerian Elements, and What Each One Does'
+date: '2026-09-14'
+category: 'space'
+tags: ['Orbital Mechanics', 'SatLab', 'Space']
+draft: true
+summary: 'Six numbers are enough to say where a satellite is and where it is going. Here is what each number controls.'
+---
+
+You need exactly six numbers to describe an orbit. Six, because you are replacing a 3D
+position and a 3D velocity, which is three numbers each.
+
+The Keplerian elements are one way to write those six. What makes them useful is that
+five of them stay the same while the satellite moves. Only one of them changes with time.
+
+Compare that to plain x, y, z coordinates, where all six numbers change every second.
+With Keplerian elements, five numbers describe the orbit and one number is the clock.
+
+## The shape: a and e
+
+**Semi-major axis `a`** sets the size of the orbit. It also sets how long one lap takes:
+
+```
+T = 2π · sqrt(a³ / μ)
+```
+
+Here `μ = GM⊕ = 398,600.4418 km³/s²` for Earth. A 90-minute orbit means `a ≈ 6,652 km`,
+which is about 274 km above the ground (Earth's equatorial radius is 6,378 km).
+
+Geostationary orbit is the value of `a` that makes `T` equal to one **sidereal** day.
+That is 86,164 seconds, not 86,400 — and the difference matters. It gives
+`a = 42,164 km`.
+
+**Eccentricity `e`** says how far the orbit is from a circle. `e = 0` is a perfect
+circle, and values between 0 and 1 are ellipses. At `e = 1` the object escapes instead
+of orbiting.
+
+Once you know `a` and `e`, you know the lowest and highest points:
+
+```
+r_perigee = a(1 − e)
+r_apogee  = a(1 + e)
+```
+
+Most satellites in low Earth orbit have `e < 0.01`, which is close enough to a circle
+that you can treat the altitude as constant. Molniya orbits are the famous exception at
+`e ≈ 0.74`. They are stretched on purpose, so the satellite spends most of its time far
+away and moving slowly over high latitudes.
+
+## The orientation: i, Ω and ω
+
+These three angles turn the orbit to face the right way. None of them changes the timing.
+
+**Inclination `i`** is the tilt of the orbit compared to the equator. It decides which
+parts of the world the satellite flies over: a satellite at inclination `i` stays between
+latitude `−i` and `+i` and never goes outside that band.
+
+This is the most important single number for a mission.
+
+| Inclination | What you get                                                               |
+| ----------- | -------------------------------------------------------------------------- |
+| `0°`        | Stays over the equator. Geostationary satellites live here.                |
+| `51.6°`     | The ISS. This angle was chosen because rockets from Baikonur can reach it. |
+| `90°`       | Polar orbit. Covers the whole planet, given enough time.                   |
+| `~98°`      | Sun-synchronous (explained below).                                         |
+
+Sun-synchronous orbits sit near `98°`. They use the fact that Earth is slightly fat at
+the equator, which slowly rotates the orbit by about 0.9856° per day. That is exactly the
+rate Earth moves around the Sun, so every pass happens at the same local time of day.
+This is why imaging satellites always see the same lighting.
+
+**Right ascension of the ascending node `Ω`** says where the satellite crosses the
+equator heading north. Two satellites can have the same `a`, `e` and `i` but different
+`Ω`, which puts them in different planes. That is how you spread a constellation out.
+
+**Argument of perigee `ω`** says where the lowest point sits inside the orbit. On a
+near-circular orbit this number barely means anything, because there is no clear lowest
+point. On a stretched orbit it decides which latitude you hover over. Molniya orbits fix
+`ω = 270°` to put the slow, far part of the orbit over the northern hemisphere.
+
+## The clock: ν
+
+**True anomaly `ν`** is the only element that moves. It is the angle from the lowest
+point of the orbit to the satellite right now.
+
+Turning a time into `ν` is the one awkward step. It goes through Kepler's equation, where
+`M` (mean anomaly) grows steadily with time and `E` (eccentric anomaly) is a helper
+angle:
+
+```
+M = E − e · sin(E)
+```
+
+There is no way to rearrange this to get `E` on its own. You have to solve it by
+repeated guessing, usually with Newton's method:
+
+```python:kepler.py
+import math
+
+
+def solve_kepler(M: float, e: float, tol: float = 1e-12) -> float:
+    """Find E from M. Takes about 4 rounds for e < 0.7."""
+    E = M if e < 0.8 else math.pi  # first guess
+    for _ in range(50):
+        delta = (E - e * math.sin(E) - M) / (1 - e * math.cos(E))
+        E -= delta
+        if abs(delta) < tol:
+            return E
+    raise RuntimeError(f"Kepler solver did not converge for M={M}, e={e}")
+
+
+def true_anomaly(E: float, e: float) -> float:
+    """Find the true anomaly from E. atan2 keeps the angle in the right half."""
+    return 2 * math.atan2(
+        math.sqrt(1 + e) * math.sin(E / 2),
+        math.sqrt(1 - e) * math.cos(E / 2),
+    )
+```
+
+Use `atan2` in that second function, not `atan`. A plain `atan` cannot tell which half of
+the orbit you are in, so half your results come out on the wrong side.
+
+## Example: the ISS
+
+Rounded numbers, close enough to work with:
+
+| Element | Value                            |
+| ------- | -------------------------------- |
+| `a`     | 6,796 km                         |
+| `e`     | 0.0006                           |
+| `i`     | 51.64°                           |
+| `Ω`     | changes by about 5° per day      |
+| `ω`     | not meaningful here, `e` is tiny |
+| `ν`     | full circle every 92.9 minutes   |
+
+From `a`: `T = 2π · sqrt(6796³ / 398600.4) ≈ 5,575 s`, which is 92.9 minutes.
+
+From `e`: the lowest and highest points differ by `2ae ≈ 8 km`. That is basically a
+circle.
+
+From `i`: it never goes further north than 51.64°, which is why you cannot see it from
+Reykjavík.
+
+Three numbers, and you already know the period, the shape and the coverage.
+
+## What this leaves out
+
+Everything that makes real orbits drift. These six numbers assume Earth is a single point
+of gravity and nothing else exists. Real orbits also deal with:
+
+- **J2, the equatorial bulge.** Earth is not a sphere. This is the biggest extra effect
+  in low orbit, and it is what makes sun-synchronous orbits possible.
+- **Air drag.** Below about 600 km there is still enough air to slow a satellite down and
+  shrink its orbit. The ISS needs regular boosts for this reason.
+- **The Moon and the Sun**, which pull on satellites in higher orbits.
+- **Sunlight**, which pushes on large, light satellites.
+
+This is why nobody uses plain Kepler maths to track a real satellite. They use SGP4, which
+includes a model of the bulge and a drag term. That is the subject of the
+[next note](/notes/tle-to-ground-track).
+
+These six numbers are still the right way to think about an orbit. They are just not the
+right way to predict one.
+
+---
+
+_Part of the working notes behind [SatLab](/satlab)._

@@ -3,7 +3,6 @@
 import clsx from 'clsx'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-// import { KbarSearchTrigger } from '~/components/search/kbar-trigger'
 import { Container } from '~/components/ui/container'
 import { GrowingUnderline } from '~/components/ui/growing-underline'
 import { Link } from '~/components/ui/link'
@@ -11,6 +10,7 @@ import { HEADER_NAV_LINKS } from '~/data/navigation'
 import { SITE_METADATA } from '~/data/site-metadata'
 import { Logo } from './logo'
 import { MobileNav } from './mobile-nav'
+import { NAV_ICONS } from './nav-icons'
 import { ThemeSwitcher } from './theme-switcher'
 
 let logged = false
@@ -41,14 +41,31 @@ export function Header() {
         <Logo />
         <div className="flex items-center gap-4">
           <div className="hidden gap-1.5 sm:flex">
-            {HEADER_NAV_LINKS.map(({ title, href }) => {
+            {HEADER_NAV_LINKS.map(({ title, href, icon, accent }) => {
+              const Icon = icon ? NAV_ICONS[icon] : null
               const isActive = pathname.startsWith(href)
               return (
-                <Link key={title} href={href} className="px-3 py-1 font-medium">
+                <Link
+                  key={title}
+                  href={href}
+                  className={clsx(
+                    'px-3 py-1 font-medium',
+                    // The one accented nav item, so the newest thing here is the
+                    // thing that catches the eye. 700/400 rather than 500 --
+                    // emerald-500 on white is 2.54:1 and unreadable as text.
+                    accent && 'text-primary-700 dark:text-primary-400'
+                  )}
+                >
                   <GrowingUnderline
-                    className={clsx(isActive && 'bg-[length:100%_50%]')}
+                    className={clsx(
+                      'inline-flex items-center gap-1.5',
+                      isActive && 'bg-[length:100%_50%]'
+                    )}
                     data-umami-event={`nav-${href.replace('/', '')}`}
                   >
+                    {Icon && (
+                      <Icon size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+                    )}
                     {title}
                   </GrowingUnderline>
                 </Link>
@@ -62,7 +79,6 @@ export function Header() {
           />
           <div className="flex items-center gap-2">
             <ThemeSwitcher />
-            {/* <KbarSearchTrigger /> */}
             <MobileNav />
           </div>
         </div>

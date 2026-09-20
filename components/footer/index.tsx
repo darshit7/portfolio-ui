@@ -16,7 +16,7 @@ const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
 
 export function Footer() {
   return (
-    <Container as="footer" className="mb-0">
+    <Container as="footer">
       <div
         className={clsx([
           'flex flex-col gap-3 py-5 text-sm',
