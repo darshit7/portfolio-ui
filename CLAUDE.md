@@ -69,7 +69,8 @@ The Contentlayer warning about a missing `compilerOptions.baseUrl` on every buil
 
 ## Working rules
 
-- **Conventional commits are required** (`commitlint.config.js`, `@commitlint/config-conventional`). Husky's `prepare` script is wired but only `.husky/_` scaffolding is present, so nothing enforces this locally — the discipline is on you. Match existing history: `feat:`, `fix:`, `chore:`.
+- **Conventional commits are required** (`commitlint.config.js`, `@commitlint/config-conventional`) and this _is_ enforced locally: `core.hooksPath` is `.husky/_`, and `.husky/commit-msg` runs commitlint on every commit. `.husky/pre-commit` runs `lint-staged` (prettier over staged files). Match existing history: `feat:`, `fix:`, `chore:`.
+- **`pre-push` deliberately does not run the test suite.** It used to run `pnpm test` and was removed: on `/mnt/d` a cold vitest worker intermittently needs more than the 60s `START_TIMEOUT` that is hardcoded in vitest (`START_TIMEOUT = 6e4`, not configurable), so the pool killed the run and blocked the push with `Failed to start … worker`. Nothing is lost — `.github/workflows/ci.yml` runs `typecheck`, `lint`, `test`, `build` and `test:e2e` on every PR and on push to `main`, on a normal filesystem. Run `pnpm test` yourself when you want it; don't wire it back into a hook.
 - **Don't edit `data/site-metadata.ts`, `data/blog-metadata.ts`, or `data/notes/**` unless asked.\*\* These are the author's personal identity, links, and writing — not code to refactor.
 - Keep edits in their layer: routes/metadata in `app/`, reusable UI in `components/`, content model in `contentlayer.config.ts` + `utils/remark-*`, site-wide config in `data/`.
 - `pnpm lint` runs with `--fix` and will rewrite files. Check `git status` afterward if the working tree mattered.
