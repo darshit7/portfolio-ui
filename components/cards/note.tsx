@@ -8,13 +8,11 @@ import { TiltedGridBackground } from '~/components/ui/tilted-grid-background'
 import { getNoteCategory } from '~/data/note-categories'
 import type { CoreContent } from '~/types/data'
 import { formatDate } from '~/utils/misc'
-import { readingTimeText } from '~/utils/note-fields'
 import { NoteIcon } from './note-icon'
 
 export function NoteCard({ note }: { note: CoreContent<Note> }) {
-  const { icon, heading, summary, title, path, category, date, readingTime } = note
+  const { icon, heading, summary, title, path, category, date } = note
   const categoryMeta = getNoteCategory(category)
-  const minutes = readingTimeText(readingTime)
 
   return (
     <GradientBorder className="rounded-2xl">
@@ -58,12 +56,6 @@ export function NoteCard({ note }: { note: CoreContent<Note> }) {
             ])}
           >
             <time dateTime={date}>{formatDate(date)}</time>
-            {minutes && (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>{minutes}</span>
-              </>
-            )}
           </div>
         </div>
       </Link>

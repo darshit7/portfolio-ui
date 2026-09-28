@@ -32,8 +32,7 @@ describe('NoteCard', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', '/notes/orbital-elements-primer')
   })
 
-  // `date` and `readingTime` were both available on every note from the start
-  // and neither was rendered -- readingTime was computed and discarded outright.
+  // `date` was available on every note from the start and was not rendered.
   it('renders the authored date in UTC, not the host zone', () => {
     // The suite runs under TZ=America/Los_Angeles. Formatting UTC midnight in
     // the host zone would render 13 Sep.
@@ -45,9 +44,12 @@ describe('NoteCard', () => {
     expect(screen.queryByText('Sep 13, 2026')).not.toBeInTheDocument()
   })
 
-  it('renders the reading time', () => {
+  // REGRESSION GUARD: reading time was dropped from every note surface. The
+  // contentlayer field is still computed, so nothing stops it being piped back
+  // into a card by accident.
+  it('never renders a reading time', () => {
     render(<NoteCard note={note()} />)
-    expect(screen.getByText('7 min read')).toBeInTheDocument()
+    expect(screen.queryByText(/min read/)).not.toBeInTheDocument()
   })
 
   // REGRESSION GUARD: `icon` became optional when notes stopped being only
@@ -74,8 +76,6 @@ describe('NoteCard', () => {
 
   it('survives a note with no reading time', () => {
     render(<NoteCard note={note({ readingTime: undefined })} />)
-
     expect(screen.getByText('Orbital Elements')).toBeInTheDocument()
-    expect(screen.queryByText(/min read/)).not.toBeInTheDocument()
   })
 })

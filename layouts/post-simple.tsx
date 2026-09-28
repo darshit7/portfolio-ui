@@ -14,7 +14,7 @@ import { Pill } from '~/components/ui/pill'
 import { getNoteCategory } from '~/data/note-categories'
 import type { CoreContent } from '~/types/data'
 import { formatDate } from '~/utils/misc'
-import { readingTimeText, tocItems } from '~/utils/note-fields'
+import { tocItems } from '~/utils/note-fields'
 
 interface PostSimpleProps {
   content: CoreContent<Note>
@@ -24,10 +24,9 @@ interface PostSimpleProps {
 }
 
 export function PostSimple({ content, children, next, prev }: PostSimpleProps) {
-  const { title, date, lastmod, category, tags, readingTime, toc } = content
+  const { title, date, lastmod, category, tags, toc } = content
 
   const categoryMeta = category ? getNoteCategory(category) : undefined
-  const minutes = readingTimeText(readingTime)
   const headings = tocItems(toc)
 
   return (
@@ -55,12 +54,6 @@ export function PostSimple({ content, children, next, prev }: PostSimpleProps) {
                 <span>
                   Updated <time dateTime={lastmod}>{formatDate(lastmod)}</time>
                 </span>
-              </>
-            )}
-            {minutes && (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>{minutes}</span>
               </>
             )}
           </div>

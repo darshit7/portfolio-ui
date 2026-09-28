@@ -6,6 +6,11 @@
  * This is the single source of truth for the taxonomy: `category` in note
  * frontmatter is a contentlayer enum built from these slugs.
  *
+ * A slug and a label is the whole entry. Each category used to carry a blurb
+ * rendered under its heading on /notes; it restated the label, so the sections
+ * are headed by their name and count alone and a new category needs nothing
+ * written for it.
+ *
  * **Do not remove an entry to hide notes.** Contentlayer does not reject a note
  * whose category is missing from this list -- it narrows the generated
  * `category` type to the surviving slugs and builds the orphaned notes anyway,
@@ -19,29 +24,24 @@ export const NOTE_CATEGORIES = [
   {
     slug: 'engineering',
     label: 'Engineering',
-    blurb: 'Configs, cheatsheets, and things I look up too often to remember.',
   },
   {
     slug: 'ai',
     label: 'AI & Prompts',
-    blurb: 'Prompts I use again and again, and agent patterns that worked on real projects.',
   },
   {
     slug: 'reading',
     label: 'Reading',
-    blurb: 'Notes from books and papers. Short, and honest about what I did not finish.',
   },
   {
     slug: 'practice',
     label: 'Practice',
-    blurb: 'How I work: the systems and habits I use, and where they break.',
   },
   // Last on purpose. It is the newest thread and the most specialised, so it
   // reads better as the thing you find at the end than as the second section in.
   {
     slug: 'space',
     label: 'Space',
-    blurb: 'The orbital mechanics and maths behind SatLab, worked out step by step.',
   },
 ] as const
 
