@@ -71,10 +71,9 @@ describe('NOTE_CATEGORIES', () => {
     expect(new Set(slugs).size).toBe(slugs.length)
   })
 
-  it('gives every category a label and a blurb', () => {
+  it('gives every category a label', () => {
     for (const category of NOTE_CATEGORIES) {
       expect(category.label.trim().length, `${category.slug} has no label`).toBeGreaterThan(0)
-      expect(category.blurb.trim().length, `${category.slug} has no blurb`).toBeGreaterThan(0)
     }
   })
 

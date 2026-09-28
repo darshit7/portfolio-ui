@@ -4,7 +4,11 @@ import { defineConfig } from 'vitest/config'
 
 const root = fileURLToPath(new URL('./', import.meta.url))
 
-export default defineConfig({
+/**
+ * Shared Vite config. Projects do not inherit the root `plugins`/`resolve`, so
+ * this is spread into each one rather than declared once above them.
+ */
+const shared = {
   plugins: [react()],
   resolve: {
     // Explicit aliases rather than vite-tsconfig-paths: tsconfig.json has no
@@ -23,12 +27,43 @@ export default defineConfig({
       { find: /^app\//, replacement: `${root}app/` },
     ],
   },
+}
+
+export default defineConfig({
+  ...shared,
   test: {
-    environment: 'jsdom',
+    // worker_threads rather than forked processes. This repo lives on /mnt/d,
+    // a Windows drive reached over 9p, where spawning a node process per test
+    // file and re-reading node_modules through it is the dominant cost -- and
+    // vitest kills a run whose worker takes longer than a hardcoded 60s to
+    // boot, which forked workers on a cold cache intermittently did.
+    pool: 'threads',
     globals: true,
-    setupFiles: ['./tests/setup.ts'],
-    include: ['tests/**/*.test.{ts,tsx}'],
-    // Playwright specs live in e2e/ and are run by `pnpm test:e2e`.
-    exclude: ['node_modules', '.next', '.contentlayer', 'e2e'],
+    // Split by what each suite actually needs. Building a jsdom and loading
+    // @testing-library cost ~35s and ~11s per file, and the eight suites in
+    // tests/unit touch no DOM at all -- they were paying both for nothing.
+    projects: [
+      {
+        ...shared,
+        test: {
+          name: 'unit',
+          pool: 'threads',
+          environment: 'node',
+          globals: true,
+          include: ['tests/unit/**/*.test.ts'],
+        },
+      },
+      {
+        ...shared,
+        test: {
+          name: 'components',
+          pool: 'threads',
+          environment: 'jsdom',
+          globals: true,
+          setupFiles: ['./tests/setup.ts'],
+          include: ['tests/components/**/*.test.{ts,tsx}'],
+        },
+      },
+    ],
   },
 })
