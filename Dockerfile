@@ -18,7 +18,8 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Read by data/site-metadata.ts while pages prerender, so it must be present at
-# build time; setting it on the running container has no effect.
+# build time. Pages rendered on demand (e.g. 404s for unknown slugs) read it
+# again at runtime, from the Container App's NEXT_UMAMI_ID env var.
 ARG NEXT_UMAMI_ID
 ENV NEXT_UMAMI_ID=$NEXT_UMAMI_ID STANDALONE=1
 RUN pnpm build
