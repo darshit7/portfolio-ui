@@ -11,14 +11,6 @@ const PAGES = [
   '/tags/python',
 ]
 
-/**
- * @vercel/analytics fetches /_vercel/insights/script.js, which is injected by
- * Vercel's edge runtime and does not exist under `next start`. Locally it 404s
- * and logs a MIME-type error. Filtered narrowly by path so genuine 404s and
- * console errors still fail the suite.
- */
-const isVercelRuntimeNoise = (text: string) => text.includes('_vercel/insights')
-
 /** Collects console errors and failed responses for the lifetime of a page. */
 function watch(page: Page) {
   const consoleErrors: string[] = []
@@ -27,7 +19,6 @@ function watch(page: Page) {
   page.on('console', (msg: ConsoleMessage) => {
     if (msg.type() !== 'error') return
     const text = msg.text()
-    if (isVercelRuntimeNoise(text)) return
     // "Failed to load resource" carries no URL and always duplicates a
     // response-level failure, which `notFound` records *with* its URL. Dropping
     // it here loses no coverage -- a genuinely missing asset still fails the
@@ -37,7 +28,7 @@ function watch(page: Page) {
   })
   page.on('pageerror', (err) => consoleErrors.push(String(err)))
   page.on('response', (res: Response) => {
-    if (res.status() === 404 && !isVercelRuntimeNoise(res.url())) {
+    if (res.status() === 404) {
       notFound.push(`${res.status()} ${res.url()}`)
     }
   })

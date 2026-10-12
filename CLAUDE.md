@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Personal portfolio/blog: Next.js 16 App Router + React 19 + Tailwind 3, with MDX content compiled by Contentlayer2. Deployed on Vercel. Package manager is **pnpm** (Node 24, per `.nvmrc`).
+Personal portfolio/blog: Next.js 16 App Router + React 19 + Tailwind 3, with MDX content compiled by Contentlayer2. Deployed to Azure Container Apps as a Docker image (see **Deployment**). Package manager is **pnpm** (Node 24, per `.nvmrc`).
 
 ## Commands
 
@@ -63,9 +63,21 @@ The Contentlayer warning about a missing `compilerOptions.baseUrl` on every buil
 
 ## Config notes
 
-- `next.config.js` sets a strict CSP, built by `contentSecurityPolicy(isDev)` and keyed off `PHASE_DEVELOPMENT_SERVER`. `'unsafe-eval'` is deliberately absent from the **production** policy; it is added for `next dev` only, because React's development build calls `eval()` for debugging features and refuses to boot without it. `va.vercel-scripts.com` is dev-only for the same reason (`@vercel/analytics` serves its debug script from there; production loads it same-origin). `'unsafe-inline'` for `script-src` is retained in both, only for the next-themes FOUC script. Adding a third-party script means adding its host here — and if it only loads in dev, add it to the `isDev` branch so the shipped policy stays strict.
+- `next.config.js` sets a strict CSP, built by `contentSecurityPolicy(isDev)` and keyed off `PHASE_DEVELOPMENT_SERVER`. `'unsafe-eval'` is deliberately absent from the **production** policy; it is added for `next dev` only, because React's development build calls `eval()` for debugging features and refuses to boot without it. `'unsafe-inline'` for `script-src` is retained in both, only for the next-themes FOUC script. Adding a third-party script means adding its host here — and if it only loads in dev, add it to the `isDev` branch so the shipped policy stays strict.
 - SVG imports go through `@svgr/webpack`, configured **twice** — under `turbopack.rules` (dev/build default) and `webpack()`. Change both or behavior diverges.
-- Env vars: `NEXT_UMAMI_ID` (analytics; warns if unset in prod), `BASE_PATH`, `EXPORT`, `UNOPTIMIZED`, `ANALYZE`.
+- Env vars: `NEXT_UMAMI_ID` (analytics; warns if unset in prod), `BASE_PATH`, `EXPORT`, `STANDALONE`, `UNOPTIMIZED`, `ANALYZE`.
+
+## Deployment
+
+Every push to `main` runs the `deploy` job in `.github/workflows/ci.yml`, after `verify` passes. It builds the `Dockerfile`, pushes `ghcr.io/darshit7/portfolio-ui:<sha>` (and `:latest`) to GHCR, and runs `az containerapp update` to start a new revision on that SHA. Pull requests never deploy.
+
+- The image runs Next's `standalone` output (`node server.js`), enabled by `STANDALONE=1` in the Dockerfile. It is opt-in because `pnpm serve` (`next start`), and so the e2e suite, warns under `standalone`.
+- **`NEXT_UMAMI_ID` is build-time.** Pages prerender with it, so it is passed as a Docker `--build-arg` from the GitHub variable of the same name. Setting it on the running container does nothing.
+- Builder and runner stages share `node:24-bookworm-slim` because `sharp` (used by `next/image`) installs a per-platform binary.
+- `.dockerignore` excludes `.npmrc`, which points `store-dir` at a host path.
+- GitHub `production` environment: secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` (OIDC federated credential, subject `repo:darshit7/portfolio-ui:environment:production`); variables `AZURE_RESOURCE_GROUP`, `AZURE_CONTAINERAPP_NAME`, `NEXT_UMAMI_ID`.
+- Rollback: `az containerapp update -n <app> -g <rg> --image ghcr.io/darshit7/portfolio-ui:<older-sha>`.
+- Local image: `docker build --build-arg NEXT_UMAMI_ID=<id> -t portfolio . && docker run --rm -p 3000:3000 portfolio`.
 
 ## Working rules
 

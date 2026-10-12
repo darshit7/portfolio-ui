@@ -14,7 +14,7 @@ Thorugh this blog, I aspire to cultivate curiosity, foster connection and empowe
 
 ## Tech stack
 
-This blog is hosted on [Vercel](https://vercel.com/), built with [Next.js](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/) using **Tailwind Nextjs Starter Blog**.
+This blog is hosted on [Azure Container Apps](https://azure.microsoft.com/products/container-apps), built with [Next.js](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/) using **Tailwind Nextjs Starter Blog**.
 
 A huge thanks to [Tuan Anh](https://www.leohuynh.dev/), this site took inspiration from his personal blog. A few changes I did are:
 

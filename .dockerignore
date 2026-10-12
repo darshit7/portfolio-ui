@@ -1,0 +1,23 @@
+# Dependencies and build output are produced inside the image.
+node_modules
+.next
+.contentlayer
+*.tsbuildinfo
+
+# Local machine config. .npmrc points store-dir at a host path.
+.npmrc
+.nvmrc
+.env*
+.vscode
+
+# Not needed to build the site.
+.git
+.github
+.husky
+e2e
+tests
+test-results
+playwright-report
+coverage
+Dockerfile
+.dockerignore

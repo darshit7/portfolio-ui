@@ -25,10 +25,6 @@ function contentSecurityPolicy(isDev) {
     "'self'",
     "'unsafe-inline'",
     isDev && "'unsafe-eval'",
-    // @vercel/analytics pulls its debug build from this host in development.
-    // In production it loads /_vercel/insights/script.js, which the Vercel edge
-    // serves same-origin, so 'self' already covers the deployed case.
-    isDev && 'va.vercel-scripts.com',
     'analytics.umami.is',
     'cloud.umami.is',
     '*.umami.is',
@@ -88,7 +84,9 @@ function securityHeaders(isDev) {
   ]
 }
 
-const output = process.env.EXPORT ? 'export' : undefined
+// `standalone` is what the Docker image runs (`node server.js`). It is opt-in
+// because `next start`, used by `pnpm serve` and the e2e suite, warns under it.
+const output = process.env.EXPORT ? 'export' : process.env.STANDALONE ? 'standalone' : undefined
 const basePath = process.env.BASE_PATH || undefined
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
