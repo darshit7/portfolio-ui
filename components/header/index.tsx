@@ -61,7 +61,7 @@ export function Header() {
                       'inline-flex items-center gap-1.5',
                       isActive && 'bg-[length:100%_50%]'
                     )}
-                    data-umami-event={`nav-${href.replace('/', '')}`}
+                    data-umami-event={`nav-${title.toLowerCase()}`}
                   >
                     {Icon && (
                       <Icon size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />

@@ -1,9 +1,8 @@
 import { SITE_METADATA } from './site-metadata'
 
 /**
- * Where the satellite simulator will live once it ships. The nav points at the
- * local `/satlab` teaser until then -- swapping `href` below is the whole
- * migration.
+ * Where the satellite simulator lives. The nav links straight to it; the local
+ * `/satlab` teaser page still exists but is no longer in the nav.
  */
 export const SATLAB_URL = 'https://satlab.darshitp.dev'
 
@@ -32,7 +31,7 @@ export const HEADER_NAV_LINKS: NavLink[] = [
   { href: '/notes', title: 'Notes', emoji: 'spiral-notepad' },
   // twemoji.css carries `ringed-planet` but not `satellite`, so mobile uses the
   // planet and desktop gets the lucide satellite.
-  { href: '/satlab', title: 'SatLab', emoji: 'ringed-planet', icon: 'satellite', accent: true },
+  { href: SATLAB_URL, title: 'SatLab', emoji: 'ringed-planet', icon: 'satellite', accent: true },
 ]
 
 export const FOOTER_PERSONAL_STUFF = [
