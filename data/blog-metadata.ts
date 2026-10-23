@@ -64,4 +64,11 @@ export const BLOG_METADATA: BlogItem[] = [
     date: new Date('2026-09-20'),
     tags: ['Careers', 'Practice'],
   },
+  {
+    id: 9,
+    title: 'How Can Satellites See Through Clouds? Exploring SAR as a Software Engineer',
+    link: 'https://medium.com/@darshit7/how-can-satellites-see-through-clouds-exploring-sar-as-a-software-engineer-a7e1237507cd',
+    date: new Date('2026-10-23'),
+    tags: ['Space', 'SAR', 'Remote Sensing'],
+  },
 ]
