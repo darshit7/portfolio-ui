@@ -71,4 +71,11 @@ export const BLOG_METADATA: BlogItem[] = [
     date: new Date('2026-10-23'),
     tags: ['Space', 'SAR', 'Remote Sensing'],
   },
+  {
+    id: 10,
+    title: 'What Happens Between a Satellite Taking an Image and It Reaches You?',
+    link: 'https://medium.com/illumination/what-happens-between-a-satellite-taking-an-image-and-it-reaches-you-960cbc024006?sk=14f091e66f6a68cb5d5a3ba099f4b037',
+    date: new Date('2026-11-26'),
+    tags: ['Space', 'Remote Sensing'],
+  },
 ]

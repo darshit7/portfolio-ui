@@ -25,6 +25,12 @@ describe('getPublication', () => {
     )
   })
 
+  it('recognises ILLUMINATION', () => {
+    expect(
+      getPublication('https://medium.com/illumination/what-happens-between-a-satellite-w')
+    ).toBe('ILLUMINATION')
+  })
+
   // 28 — a personal Medium post must not be attributed to a publication.
   it('falls back to Medium for a personal post', () => {
     expect(getPublication('https://medium.com/@darshit7/riding-the-deepseek-wave-a')).toBe('Medium')
