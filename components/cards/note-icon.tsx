@@ -1,4 +1,4 @@
-import { BookOpen, Code2, Compass, Satellite, Sparkles } from 'lucide-react'
+import { Code2, Satellite, Sparkles } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Brand, BrandsMap } from '~/components/ui/brand'
 import type { NoteCategory } from '~/data/note-categories'
@@ -13,8 +13,6 @@ export const CATEGORY_ICONS: Record<NoteCategory, LucideIcon> = {
   engineering: Code2,
   space: Satellite,
   ai: Sparkles,
-  reading: BookOpen,
-  practice: Compass,
 }
 
 /**

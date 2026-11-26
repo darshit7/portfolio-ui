@@ -6,7 +6,11 @@ import { Pill, PillLink } from '~/components/ui/pill'
 import { BLOG_METADATA } from '~/data/blog-metadata'
 import { collectTags } from '~/utils/tags'
 
-export const metadata = genPageMetadata({ title: 'Blog' })
+export const metadata = genPageMetadata({
+  title: 'Blog',
+  description: 'Long-form articles on Python internals, concurrency and AI, published on Medium.',
+  ogCard: 'blog',
+})
 
 export default function BlogPage() {
   const blogs = [...BLOG_METADATA].sort((a, b) => b.date.getTime() - a.date.getTime())

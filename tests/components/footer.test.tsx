@@ -36,6 +36,11 @@ describe('Footer', () => {
 
   it('renders the headline once', () => {
     render(<Footer />)
-    expect(screen.getByText(/Backend & Agentic Systems/i)).toBeInTheDocument()
+    expect(screen.getByText(/Python Backend & Agentic AI/i)).toBeInTheDocument()
+  })
+
+  it('credits the copyright to the full name, not "Darshit\'s Blog"', () => {
+    render(<Footer />)
+    expect(screen.queryByText(/Darshit's Blog/i)).not.toBeInTheDocument()
   })
 })

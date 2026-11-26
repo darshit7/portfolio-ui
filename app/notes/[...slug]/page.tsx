@@ -3,11 +3,14 @@ import { allNotes } from 'contentlayer/generated'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { MDX_COMPONENTS } from '~/components/mdx'
+import { JsonLd } from '~/components/seo/json-ld'
 import { SITE_METADATA } from '~/data/site-metadata'
 import { PostSimple } from '~/layouts/post-simple'
 import { allCoreContent, coreContent } from '~/utils/contentlayer'
+import { noteGraph } from '~/utils/json-ld'
 import { MDXLayoutRenderer } from '~/components/mdx/layout-renderer'
 import { sortPosts } from '~/utils/misc'
+import { noteOgKey, ogImage } from '~/utils/og'
 
 const DEFAULT_LAYOUT = 'PostSimple'
 const LAYOUTS = {
@@ -26,31 +29,41 @@ export async function generateMetadata(props: {
 
   const publishedAt = new Date(note.date).toISOString()
   const modifiedAt = new Date(note.lastmod || note.date).toISOString()
-  let imageList = [SITE_METADATA.socialBanner]
-  if (note.images) {
-    imageList = typeof note.images === 'string' ? [note.images] : note.images
-  }
-  const ogImages = imageList.map((img) => {
-    return {
-      url: img.includes('http') ? img : SITE_METADATA.siteUrl + img,
-    }
-  })
+  const description = note.description ?? note.summary
 
+  // No `alternates` or `twitter` here: both are inherited from the root layout,
+  // and setting `alternates` would drop the per-page canonical (see app/seo.tsx).
   return {
     title: note.title,
-    description: note.summary,
+    description,
+    authors: [{ name: SITE_METADATA.author, url: SITE_METADATA.siteUrl }],
     openGraph: {
       title: note.title,
-      description: note.summary,
-      siteName: SITE_METADATA.title,
+      description,
+      siteName: SITE_METADATA.author,
       locale: 'en_US',
       type: 'article',
       publishedTime: publishedAt,
       modifiedTime: modifiedAt,
+      authors: [SITE_METADATA.author],
+      tags: note.tags,
       url: './',
-      images: ogImages,
+      images: noteOgImages(note),
     },
   }
+}
+
+/**
+ * Frontmatter `images` win when a note sets them; otherwise the note's
+ * generated card. Either way the result is never empty, because an
+ * `openGraph` without `images` would replace the root's card with nothing.
+ */
+function noteOgImages(note: Note) {
+  if (note.images) {
+    const list: string[] = typeof note.images === 'string' ? [note.images] : note.images
+    return list.map((img) => ({ url: img.includes('http') ? img : SITE_METADATA.siteUrl + img }))
+  }
+  return [ogImage(noteOgKey(note.slug))]
 }
 
 export const generateStaticParams = async () => {
@@ -76,16 +89,13 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const next = sortedCoreContents[snippetIndex - 1]
   const note = allNotes.find((p) => p.slug === slug) as Note
   const mainContent = coreContent(note)
-  const jsonLd = note.structuredData
+  const jsonLd = noteGraph(note, noteOgImages(note)[0].url)
 
   const Layout = LAYOUTS[(note.layout ?? DEFAULT_LAYOUT) as keyof typeof LAYOUTS]
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
       <Layout content={mainContent} next={next} prev={prev}>
         <MDXLayoutRenderer code={note.body.code} components={MDX_COMPONENTS} toc={note.toc} />
       </Layout>

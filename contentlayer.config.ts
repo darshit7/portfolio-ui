@@ -11,7 +11,6 @@ import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { remarkAlert } from 'remark-github-blockquote-alert'
 import { NOTE_CATEGORY_SLUGS } from './data/note-categories'
-import { SITE_METADATA } from './data/site-metadata'
 import { remarkCodeTitles } from './utils/remark-code-titles'
 import { remarkExtractFrontmatter } from './utils/remark-extract-frontmatter'
 import { remarkImgToJsx } from './utils/remark-img-to-jsx'
@@ -69,27 +68,18 @@ export const Note = defineDocumentType(() => ({
     lastmod: { type: 'date' },
     draft: { type: 'boolean' },
     summary: { type: 'string' },
+    // Optional search-snippet description. `summary` is written to be read on
+    // the page and can be deliberately teasing; this is the plain statement of
+    // what the note covers, for the meta description, og:description and
+    // JSON-LD. Falls back to `summary` when absent.
+    description: { type: 'string' },
     images: { type: 'json' },
     layout: { type: 'string' },
   },
-  computedFields: {
-    ...computedFields,
-    structuredData: {
-      type: 'json',
-      resolve: (doc) => ({
-        '@context': 'https://schema.org',
-        // Was 'CodeSnippet', which stopped being true once notes covered
-        // orbital mechanics and reading as well as configs.
-        '@type': 'TechArticle',
-        headline: doc.title,
-        datePublished: doc.date,
-        dateModified: doc.lastmod || doc.date,
-        description: doc.summary,
-        image: doc.images ? doc.images[0] : SITE_METADATA.socialBanner,
-        url: `${SITE_METADATA.siteUrl}/${doc._raw.flattenedPath}`,
-      }),
-    },
-  },
+  // JSON-LD is built in the note route (utils/json-ld.ts), not here: it needs
+  // the note's share-card URL, which belongs to the app layer, and as a
+  // computed field it was also shipped to every visitor inside /search.json.
+  computedFields,
 }))
 
 export default makeSource({

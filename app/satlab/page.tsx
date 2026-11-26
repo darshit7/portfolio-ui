@@ -11,9 +11,14 @@ import { SATLAB } from '~/data/satlab'
 //   GradientDivider · Link · Pill · TiltedGridBackground · SATLAB_URL
 //   allNotes (contentlayer/generated) · allCoreContent · sortPosts
 
+// Kept out of search results while the body is commented out: an indexed page
+// with a heading and nothing else is thin content. `follow` stays on so links
+// into it still pass through. When the body is restored, delete `robots` here
+// and add 'satlab' back to the static routes in app/sitemap.ts.
 export const metadata = genPageMetadata({
   title: 'SatLab',
   description: SATLAB.pitch,
+  robots: { index: false, follow: true },
 })
 
 export default function SatLabPage() {

@@ -59,7 +59,7 @@ export const allNotes = [
     heading: 'Draft',
     title: 'An Unpublished Draft',
     icon: 'Markdown',
-    category: 'practice',
+    category: 'engineering',
     tags: ['Drafts Only'],
     date: '2025-12-01T00:00:00.000Z',
     summary: 'Must never reach production.',

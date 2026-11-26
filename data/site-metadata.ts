@@ -1,18 +1,21 @@
 export const SITE_METADATA = {
-  title: `Darshit's blog – stories, insights, and ideas`,
+  title: 'Darshit Patoliya – Python Backend & Agentic AI',
   firstName: 'Darshit',
   lastName: 'Patoliya',
   author: 'Darshit Patoliya',
-  headerTitle: `Darshit's blog`,
-  headline: 'Python developer | Backend & Agentic Systems',
+  headerTitle: 'Darshit Patoliya',
+  headline: 'Senior Software Engineer · Python Backend & Agentic AI',
   jobTitle: 'SDE - III',
+  // The JSON-LD Person's jobTitle. Search engines and readers outside the
+  // company can't map an internal ladder code like `jobTitle` above.
+  schemaJobTitle: 'Senior Software Engineer',
   // Drives the "N+ years" copy on the home page so it never goes stale.
   careerStartDate: '2015-07-01',
   organization: 'Morgan Stanley',
   city: 'Bengaluru',
   cityWiki: '',
   description:
-    'A personal space on the cloud where I document my programming journey, sharing lessons, insights, and resources for fellow developers.',
+    'Senior software engineer building Python backends and agentic AI systems. Notes on Python, AI agents, concurrency and orbital mechanics.',
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://www.darshitp.dev',
@@ -23,9 +26,9 @@ export const SITE_METADATA = {
   socialBanner: `${process.env.BASE_PATH || ''}/static/images/avatar.jpg`,
   email: 'darshit7@gmail.com',
   github: 'https://github.com/darshit7',
-  x: 'https://twitter.com/_imdp__',
-  facebook: 'https://facebook.com',
-  youtube: 'https://youtube.com',
+  x: 'https://x.com/_imdp__',
+  xHandle: '@_imdp__',
+  medium: 'https://medium.com/@darshit7',
   linkedin: 'https://www.linkedin.com/in/darshit7',
   instagram: 'https://www.instagram.com/_imdp__',
   locale: 'en-US',
