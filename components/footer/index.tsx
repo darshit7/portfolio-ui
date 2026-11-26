@@ -60,7 +60,7 @@ export function Footer() {
             <span className="mx-2 text-gray-400" aria-hidden="true">
               ·
             </span>
-            {SITE_METADATA.firstName}&apos;s Blog
+            {SITE_METADATA.author}
           </span>
           <ul className="flex items-center gap-4">
             {FOOTER_PERSONAL_STUFF.map((link) => (

@@ -1,5 +1,5 @@
 /**
- * The five things this notebook is for. The order here is the order the
+ * The three things this notebook is for. The order here is the order the
  * sections render in on /notes, so it reads as a deliberate table of contents
  * rather than whatever happened to be written last.
  *
@@ -28,14 +28,6 @@ export const NOTE_CATEGORIES = [
   {
     slug: 'ai',
     label: 'AI & Prompts',
-  },
-  {
-    slug: 'reading',
-    label: 'Reading',
-  },
-  {
-    slug: 'practice',
-    label: 'Practice',
   },
   // Last on purpose. It is the newest thread and the most specialised, so it
   // reads better as the thing you find at the end than as the second section in.

@@ -9,7 +9,11 @@ import { NOTE_CATEGORIES } from '~/data/note-categories'
 import { allCoreContent } from '~/utils/contentlayer'
 import { sortPosts } from '~/utils/misc'
 
-export const metadata = genPageMetadata({ title: 'Notes' })
+export const metadata = genPageMetadata({
+  title: 'Notes',
+  description: 'Working notes on Python, AI agents, code review, orbital mechanics and RF.',
+  ogCard: 'notes',
+})
 
 /** The rail's "All notes" target, and what the page scrolls back to. */
 const TOP_ID = 'all-notes'

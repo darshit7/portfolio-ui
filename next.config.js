@@ -91,6 +91,33 @@ const basePath = process.env.BASE_PATH || undefined
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
 /**
+ * The apex and www hostnames are both bound to the Container App, and both used
+ * to serve the site with 200s: two copies of every page for search engines to
+ * split ranking between. One permanent redirect consolidates them on www.
+ *
+ * Done here rather than at the edge because Container Apps ingress has no
+ * redirect rules. Next matches `has: host` against the Host header with any
+ * port stripped, and ACA forwards the original Host for custom domains.
+ *
+ * The destination must stay in sync with SITE_METADATA.siteUrl, which is the
+ * canonical origin every page declares. Not applied under `output: 'export'`,
+ * which has no server to run it (and no deploy uses that mode).
+ */
+const CANONICAL_ORIGIN = 'https://www.darshitp.dev'
+const APEX_HOST = 'darshitp.dev'
+
+function redirects() {
+  return [
+    {
+      source: '/:path*',
+      has: [{ type: 'host', value: APEX_HOST }],
+      destination: `${CANONICAL_ORIGIN}/:path*`,
+      statusCode: 301,
+    },
+  ]
+}
+
+/**
  * @type {import('next/dist/next-server/server/config').NextConfig}
  **/
 module.exports = (phase) => {
@@ -118,6 +145,14 @@ module.exports = (phase) => {
         },
       ],
       unoptimized,
+    },
+    ...(output !== 'export' && { redirects: async () => redirects() }),
+    // The share-card route (app/og/[...card]) reads these with fs at render
+    // time. Every card is prerendered at build, so the container never needs
+    // them today; listing them keeps an on-demand render working inside the
+    // standalone image if that ever changes.
+    outputFileTracingIncludes: {
+      '/og/*': ['./assets/fonts/**', './public/static/images/avatar.jpg'],
     },
     async headers() {
       return [

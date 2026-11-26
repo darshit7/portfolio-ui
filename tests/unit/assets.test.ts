@@ -45,6 +45,16 @@ describe('asset integrity', () => {
     expect(missing, `referenced in app/layout.tsx but absent from public/`).toEqual([])
   })
 
+  // The feed is advertised through metadata (`alternates.types`), not an
+  // href in the layout, so test 19 cannot see it. Check both halves together:
+  // a link with no route is a 404 for every feed reader, and a route with no
+  // link is undiscoverable.
+  it('advertises the RSS feed and the route behind it exists', () => {
+    const source = readFileSync(join(ROOT, 'app/layout.tsx'), 'utf8')
+    expect(source).toMatch(/'application\/rss\+xml':\s*`\$\{BASE_PATH\}\/feed\.xml`/)
+    expect(existsSync(join(ROOT, 'app/feed.xml/route.ts'))).toBe(true)
+  })
+
   // 20 — REGRESSION: the manifest pointed at /favicon.png, which is absent.
   it('every icon in site.webmanifest exists', () => {
     const manifestPath = join(PUBLIC, 'static/favicons/site.webmanifest')

@@ -143,3 +143,100 @@ test.describe('site behaviour', () => {
     await expect(page.locator('html')).toHaveClass(/dark/)
   })
 })
+
+test.describe('seo', () => {
+  // The origin every page must declare as canonical, and that the apex
+  // redirects to. Mirrors SITE_METADATA.siteUrl (not imported: e2e runs
+  // without the app's path aliases).
+  const ORIGIN = 'https://www.darshitp.dev'
+
+  for (const path of PAGES) {
+    // REGRESSION: no page declared a canonical, while apex and www both served
+    // every page with a 200, so search engines saw two copies of the site.
+    test(`${path} declares exactly one canonical, on www`, async ({ page }) => {
+      await page.goto(path)
+      const canonical = page.locator('link[rel="canonical"]')
+      await expect(canonical).toHaveCount(1)
+      expect(await canonical.getAttribute('href')).toBe(path === '/' ? ORIGIN : `${ORIGIN}${path}`)
+    })
+
+    test(`${path} has the name in its title`, async ({ page }) => {
+      await page.goto(path)
+      await expect(page).toHaveTitle(/Darshit Patoliya/)
+    })
+
+    // REGRESSION: every page shared a 512×512 avatar, which LinkedIn and X
+    // render as a thumbnail or not at all. Also catches the shallow-merge trap:
+    // a page `openGraph` without `images` silently drops the card.
+    test(`${path} advertises a share card that serves a PNG`, async ({ page, request }) => {
+      await page.goto(path)
+      const content = await page
+        .locator('meta[property="og:image"]')
+        .first()
+        .getAttribute('content')
+      expect(content, 'og:image missing').toBeTruthy()
+      const url = new URL(content as string)
+      expect(url.origin).toBe(ORIGIN)
+
+      const response = await request.get(url.pathname)
+      expect(response.status(), `${url.pathname} did not serve`).toBe(200)
+      expect(response.headers()['content-type']).toContain('image/png')
+
+      await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+        'content',
+        'summary_large_image'
+      )
+    })
+  }
+
+  const jsonLdTypes = async (page: Page) => {
+    const blocks = await page.locator('script[type="application/ld+json"]').allTextContents()
+    return blocks.flatMap((b) =>
+      (JSON.parse(b)['@graph'] as { '@type': string }[]).map((n) => n['@type'])
+    )
+  }
+
+  test('home publishes the profile entity graph', async ({ page }) => {
+    await page.goto('/')
+    expect(await jsonLdTypes(page)).toEqual(
+      expect.arrayContaining(['ProfilePage', 'Person', 'WebSite'])
+    )
+  })
+
+  test('a note publishes its article and breadcrumb', async ({ page }) => {
+    await page.goto('/notes/vim-configurations')
+    expect(await jsonLdTypes(page)).toEqual(
+      expect.arrayContaining(['TechArticle', 'BreadcrumbList'])
+    )
+  })
+
+  // Empty stub: kept out of the index until its body returns.
+  test('/satlab is noindexed', async ({ page }) => {
+    await page.goto('/satlab')
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
+  })
+
+  test('the RSS feed is advertised and serves', async ({ page, request }) => {
+    await page.goto('/')
+    const href = await page
+      .locator('link[rel="alternate"][type="application/rss+xml"]')
+      .getAttribute('href')
+    expect(href).toBeTruthy()
+
+    const response = await request.get(new URL(href as string, ORIGIN).pathname)
+    expect(response.status()).toBe(200)
+    expect(response.headers()['content-type']).toContain('xml')
+    expect(await response.text()).toContain('<rss')
+  })
+
+  test('the apex host redirects permanently to www, keeping path and query', async ({
+    request,
+  }) => {
+    const response = await request.get('/notes?x=1', {
+      headers: { host: 'darshitp.dev' },
+      maxRedirects: 0,
+    })
+    expect(response.status()).toBe(301)
+    expect(response.headers()['location']).toBe(`${ORIGIN}/notes?x=1`)
+  })
+})
